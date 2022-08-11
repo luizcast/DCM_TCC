@@ -306,21 +306,34 @@ nomes_treino <- c("FilePath",
 names(treino_1) <- nomes_treino
 glimpse(treino_1)
 
-transform(treino_1,
+
+
+write_csv2(treino_1, "treino_1.csv")
+
+library(readr)
+treino_excel <- read_delim("treino_excel.csv", 
+                           delim = ";", escape_double = FALSE, trim_ws = TRUE)
+glimpse(treino_excel)
+treino_excel %>% group_by(Paciente) %>% count() %>% inner_join(treino_excel, by = "Paciente") %>% 
+  ungroup() %>% dplyr::relocate( Paciente, n, .after = FilePath) -> TREINO
+transform(TREINO,
           SeriesNumber = as.numeric(SeriesNumber),
           InstanceNumber = as.numeric(InstanceNumber),
           SliceLocation = as.numeric(SliceLocation),
           ExposureTime = as.numeric(ExposureTime)) %>% as_tibble() -> treino_1 
 
-#write_csv2(treino_1, "treino_1.csv")
+glimpse(TREINO)
 
+##### APLICANDO MODELO A BASE TREINO #####
 
 predict(object = MODELO_TF1_STEP, 
-        newdata = novas_variaveis,
-        type = "response")
+        newdata = TREINO,
+        type = "response") -> predict_treino
+TREINO %>% mutate(fit = predict_treino) -> TREINO_FIT
 
-novas_variaveis %>% 
-  dplyr::select(FilePath, Paciente, n, InstanceNumber, SliceLocation, ExposureTime, TableHeight) 
+
+TREINO_FIT %>% filter(fit >= 0.35) -> TREINO_SELECT
+
 
 ##########PLOT INTERESSANTE DO DATACAMP
 
