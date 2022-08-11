@@ -181,7 +181,7 @@ PRINCIPAL_FACTOR %>% ggplot(aes(x = InstanceNumber, y = Paciente, color = TF2)) 
   geom_line(size = 4)
 
 PRINCIPAL_FACTOR %>% ggplot(aes(x = SliceLocation, y = Paciente, color = TF1)) +
-  geom_line(size = 6)
+  geom_line(size = 5)
 
 
 #### MODELOS #####
@@ -195,6 +195,7 @@ step(MODELO_TF1) -> MODELO_TF1_STEP
 summary(MODELO_TF1_STEP)
 
 confusionMatrix(table(predict(MODELO_TF1_STEP, type = "response") >= 0.35, PRINCIPAL$TF1 == 1)[2:1,2:1])
+confusionMatrix(table(predict(MODELO_TF1_STEP, type = "response") >= 0.7, PRINCIPAL$TF1 == 1)[2:1,2:1])
 
 
 data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_TF1_STEP,
@@ -216,9 +217,9 @@ ROC1 <- roc(response = PRINCIPAL$TF1,
             predictor = MODELO_TF1_STEP$fitted.values)
 
 ggplotly(
-  ggroc(ROC1, color = "#440154FF", size = 1) +
+  ggroc(ROC1, color = "purple", size = 1) +
     geom_segment(aes(x = 1, xend = 0, y = 0, yend = 1),
-                 color="grey40",
+                 color="black",
                  size = 0.2) +
     labs(x = "Especificidade",
          y = "Sensitividade",
@@ -227,9 +228,14 @@ ggplotly(
                        "|",
                        "Coeficiente de Gini",
                        round((ROC1$auc[1] - 0.5) / 0.5, 3))) +
-    theme_bw()
+    theme_gray()
 )
 
+PRINCIPAL %>%  dplyr::mutate(fit = MODELO_TF1_STEP$fitted.values)  %>% 
+  dplyr::select(FilePath, Paciente, n, InstanceNumber, SliceLocation, ExposureTime, TableHeight, fit) -> 
+  BASE_MODELO_FIT
+
+BASE_MODELO_FIT %>% filter(fit >= 0.35) -> BASE_VESICULA1
 
 
 #### COMPARANDO MODELOS ####
@@ -240,98 +246,81 @@ lrtest(MODELO_TF1,MODELO_TF1_STEP)
 ####### Criando base de teste para aplicar o modelo #######
 
 
-oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/BBBBBB/", verbose = TRUE) -> base_teste
+oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/BBBBBB/", verbose = TRUE) -> teste1
 
-ID_hdr <- base_teste$hdr
-map(ID_hdr,
-    ~dplyr::filter(.x, grepl("SeriesNumber|InstanceNumber|SliceLocation|ReconstructionDiameter|DataCollectionDiameter|ExposureTime| SpaceBetweenSlices|TableHeight|Exposure", name))) -> 
-  ID_MAIOR
+teste1_hdr <- teste1$hdr
+head(map(teste1_hdr,
+    ~dplyr::filter(
+      .x, 
+      grepl("SeriesNumber|InstanceNumber|SliceLocation|ExposureTime|TableHeight", name))),1)
+
 
 head(ID_MAIOR)
 
 ##Isolando variaveis
 
 #SerieNumber
-map(ID_hdr, ~filter(.x, grepl("SeriesNumber", name))) -> ID_SeriesNumber
+map(teste1_hdr, ~filter(.x, grepl("SeriesNumber", name))) -> ID_SeriesNumber
 map(ID_SeriesNumber, ~dplyr::select(.x, "value")) -> ID_SeriesNumber
 rbindlist(ID_SeriesNumber, idcol = "name") -> ID_SeriesNumber
 
 #InstanceNumber
-map(ID_hdr, ~filter(.x, grepl("InstanceNumber", name))) -> ID_InstanceNumber
+map(teste1_hdr, ~filter(.x, grepl("InstanceNumber", name))) -> ID_InstanceNumber
 map(ID_InstanceNumber, ~dplyr::select(.x, "value")) -> ID_InstanceNumber
 rbindlist(ID_InstanceNumber, idcol = "name") -> ID_InstanceNumber
 
 #SLiceLocation
-map(ID_hdr, ~filter(.x, grepl("SliceLocation", name))) -> ID_SliceLocation
+map(teste1_hdr, ~filter(.x, grepl("SliceLocation", name))) -> ID_SliceLocation
 map(ID_SliceLocation, ~dplyr::select(.x, "value")) -> ID_SliceLocation
 rbindlist(ID_SliceLocation, idcol = "name") -> ID_SliceLocation
 
-#ReconstructionDiameter
-map(ID_hdr, ~filter(.x, grepl("ReconstructionDiameter", name))) -> ID_ReconstructionDiameter
-map(ID_ReconstructionDiameter, ~dplyr::select(.x, "value")) -> ID_ReconstructionDiameter
-rbindlist(ID_ReconstructionDiameter, idcol = "name") -> ID_ReconstructionDiameter
 
-#DataCollectionDiameter
-map(ID_hdr, ~filter(.x, grepl("DataCollectionDiameter", name))) -> ID_DataCollectionDiameter
-map(ID_DataCollectionDiameter, ~dplyr::select(.x, "value")) -> ID_DataCollectionDiameter
-rbindlist(ID_DataCollectionDiameter, idcol = "name") -> ID_DataCollectionDiameter
+#ExposureTime
 
-#ExposureTime e ExposureTimeInms
-
-map(ID_hdr, ~filter(.x, grepl("ExposureTime", name))) -> ID_ExposureTime
-map(ID_hdr, ~filter(.x, grepl("ExposureTimeInms", name))) -> ID_ExposureTimeInms
+map(teste1_hdr, ~filter(.x, grepl("ExposureTime", name))) -> ID_ExposureTime
 map(ID_ExposureTime, ~filter(.x, grepl("IS", code))) -> ID_ExposureTime
 map(ID_ExposureTime, ~dplyr::select(.x, "value")) -> ID_ExposureTime
-map(ID_ExposureTimeInms, ~dplyr::select(.x, "value")) -> ID_ExposureTimeInms
-
 rbindlist(ID_ExposureTime, idcol = "name") -> ID_ExposureTime
-rbindlist(ID_ExposureTimeInms, idcol = "name") -> ID_ExposureTimeInms
+
 
 #TableHeight
-map(ID_hdr, ~filter(.x, grepl("TableHeight", name))) -> ID_TableHeight
+map(teste1_hdr, ~filter(.x, grepl("TableHeight", name))) -> ID_TableHeight
 map(ID_TableHeight, ~dplyr::select(.x, "value")) -> ID_TableHeight
 rbindlist(ID_TableHeight, idcol = "name") -> ID_TableHeight
 
-ID_SeriesNumber[ID_InstanceNumber, on = .(name)] -> key1
-key1[ID_SliceLocation, on = .(name)] -> key2
-key2[ID_ReconstructionDiameter, on = .(name)] -> key3
-key3[ID_DataCollectionDiameter, on = .(name)] -> key4
-key4[ID_ExposureTime, on = .(name)] -> key5
-key5[ID_ExposureTimeInms, on = .(name)] -> key6
-key6[ID_TableHeight, on = .(name)] -> key7
+ID_SeriesNumber[ID_InstanceNumber, on = .(name)] -> k1
+k1[ID_SliceLocation, on = .(name)] -> k2
+k2[ID_ExposureTime, on = .(name)] -> k3
+k3[ID_TableHeight, on = .(name)] -> k4
 
 
-novas_variaveis <- as_tibble(key7)
+treino_1 <- as_tibble(k4)
 
-nomes_keys <- c("FilePath", 
+nomes_treino <- c("FilePath", 
                 "SeriesNumber", 
                 "InstanceNumber", 
-                "SliceLocation", 
-                "ReconstructionDiameter", 
-                "DataCollectionDiameter",
+                "SliceLocation",
                 "ExposureTime",
-                "ExposureTimeInms",
                 "TableHeight")
 
-names(novas_variaveis) <- nomes_keys
-glimpse(novas_variaveis)
+names(treino_1) <- nomes_treino
+glimpse(treino_1)
 
-transform(novas_variaveis,
+transform(treino_1,
           SeriesNumber = as.numeric(SeriesNumber),
           InstanceNumber = as.numeric(InstanceNumber),
           SliceLocation = as.numeric(SliceLocation),
-          ReconstructionDiameter = as.numeric(ReconstructionDiameter),
-          DataCollectionDiameter = as.numeric(DataCollectionDiameter),
-          ExposureTime = as.numeric(ExposureTime),
-          ExposureTimeInms = as.numeric(ExposureTimeInms),
-          TableHeight = as.numeric(TableHeight)
-) %>% as_tibble() -> novas_variaveis 
+          ExposureTime = as.numeric(ExposureTime)) %>% as_tibble() -> treino_1 
+
+#write_csv2(treino_1, "treino_1.csv")
 
 
-predict(object = MODELO_BINOMIAL_STEP2, 
+predict(object = MODELO_TF1_STEP, 
         newdata = novas_variaveis,
         type = "response")
 
+novas_variaveis %>% 
+  dplyr::select(FilePath, Paciente, n, InstanceNumber, SliceLocation, ExposureTime, TableHeight) 
 
 ##########PLOT INTERESSANTE DO DATACAMP
 
