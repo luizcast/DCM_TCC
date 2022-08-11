@@ -513,3 +513,11 @@ dicom.raw.data.anonymizer(XXxxXX[0010,0010])
 espadon::dicom.browser(XXxxXX)
 dicom.raw
 
+
+  
+
+scanDicom(path ="~/Desktop/1.2.840.113704.1.111.1532.1503312054.1/", verbosity = 3, forceStack = TRUE) -> novo_divest
+
+readDicom(novo_divest$rootPath[1]) -> tt
+
+image(tt)

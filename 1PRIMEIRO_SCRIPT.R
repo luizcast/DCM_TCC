@@ -33,7 +33,7 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
 
 
 ##### Elimina Arquivos fora de padrão e maiores que o padrão com tamanho 538,0kb #####
-#no terminal: find -size +540k -exec rm -r {} {} \;
+#no terminal: find -size +540k -exec rm -r {} {} \; find -size -100k -exec rm -r {} {} \;
 
 
 #### ANONIMIZANDO A BASE #####

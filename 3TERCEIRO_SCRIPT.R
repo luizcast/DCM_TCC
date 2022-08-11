@@ -2,10 +2,24 @@
 #TOTAL FILES: 165371
 #TOTAL SIZE: 89.9GB
 
+##### Transformar imagem dos arquivos DICOM em JPEG (reestruturar dados de imagem para JPEG) #####
+#no terminal: find ~/Desktop/USP/TCC/MATERIAL/DATA-SET/* -name '*.dcm' -exec dcmdjpeg {} {} \;
+#toolkit "DCMTK" - https://dicom.offis.de/dcmtk.php.en
+#O R não realiza leitura direta das imagens DICOM (ainda(?))
+
+##### SORT RENAME por SERIE NUMBER #####
+#no R: ttt <- c("/home/luiz/Desktop/DATA-SET/")
+#as.data.frame(ttt) -> va
+#sortDicom(path =va[1,], depth = 1000, forceStack = TRUE)
+
+
+##### Elimina Arquivos fora de padrão e maiores que o padrão com tamanho 538,0kb #####
+#no terminal: find -size +540k -exec rm -r {} {} \; find -size -100k -exec rm -r {} {} \;
+
 
 ##### PACKAGES #####
 ## Principais DICOM Packages utilizados :
-#"oro.dicom", "divest" 
+#"oro.dicom", "divest", "tidyverse", "data.table" 
 
 ## Como referência para outros projetos
 #"RNifti", "espadon"
@@ -35,8 +49,10 @@ ID_hdr <- ID$hdr
 map(ID_hdr,
     ~dplyr::filter(.x, grepl("SeriesNumber|InstanceNumber|SliceLocation|ReconstructionDiameter|DataCollectionDiameter|ExposureTime| SpaceBetweenSlices|TableHeight|Exposure", name))) -> 
   ID_MAIOR
-
-head(ID_MAIOR)
+ID_MAIOR[1] %>% kable() %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = F, 
+                font_size = 18)
 
 ##Isolando variaveis
 
@@ -133,6 +149,7 @@ BASE_PRINCIPAL$ExposureTimeInms <- as.numeric(BASE_PRINCIPAL$ExposureTimeInms)
 BASE_PRINCIPAL %>% group_by(Paciente) %>% count() %>% inner_join(BASE_PRINCIPAL, by = "Paciente") %>% 
     ungroup() %>% dplyr::relocate( Paciente, n, .after = FilePath) -> PRINCIPAL
 glimpse(PRINCIPAL)
+head(PRINCIPAL)
 
 
 #### Primeiros Insights ####
@@ -157,6 +174,9 @@ PRINCIPAL_FACTOR %>%  ggplot(aes(SliceLocation, ..count..)) +
 
 #Variavel Paciente n eixo Y
 
+PRINCIPAL_FACTOR %>% ggplot(aes(x = InstanceNumber, y = Paciente, color = TF1)) +
+  geom_line(size = 4)
+
 PRINCIPAL_FACTOR %>% ggplot(aes(x = InstanceNumber, y = Paciente, color = TF2)) +
   geom_line(size = 4)
 
@@ -165,257 +185,57 @@ PRINCIPAL_FACTOR %>% ggplot(aes(x = SliceLocation, y = Paciente, color = TF1)) +
 
 
 #### MODELOS #####
-#MODELO 1 calculo de TF2 com TF1
-MODELO_BINOMIAL <- glm(formula = TF2 ~ . -Paciente -FilePath -n,
-                       family = "binomial",
-                       data = PRINCIPAL)
-summary(MODELO_BINOMIAL)
-step(MODELO_BINOMIAL) -> MODELO_BINOMIAL_STEP
+#MODELO TF1
 
-
-summary(MODELO_BINOMIAL_STEP)
-logLik(MODELO_BINOMIAL_STEP)
-lrtest(MODELO_BINOMIAL_STEP)
-
-confusionMatrix(table(predict(MODELO_BINOMIAL_STEP, type = "response") >= 0.5, PRINCIPAL$TF2 == 1)[2:1,2:1])
-
-
-data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP,
-                                                         type = "response") >= 0.5,
-                                                 PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Sensitivity"]],
-           Especificidade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP,
-                                                          type = "response") >= 0.5,
-                                                  PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Specificity"]],
-           Acurácia = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP,
-                                                    type = "response") >= 0.5,
-                                            PRINCIPAL$TF2 == 1)[2:1, 2:1])[["overall"]][["Accuracy"]]) %>% 
-  kable() %>%
-  kable_styling(bootstrap_options = "striped", position = "center",
-                full_width = F, 
-                font_size = 27)
-
-
-ROC <- roc(response = PRINCIPAL$TF2, 
-           predictor = MODELO_BINOMIAL_STEP$fitted.values)
-
-ggplotly(
-  ggroc(ROC, color = "#440154FF", size = 1) +
-    geom_segment(aes(x = 1, xend = 0, y = 0, yend = 1),
-                 color="grey40",
-                 size = 0.2) +
-    labs(x = "Especificidade",
-         y = "Sensitividade",
-         title = paste("Área abaixo da curva:",
-                       round(ROC$auc, 3),
-                       "|",
-                       "Coeficiente de Gini",
-                       round((ROC$auc[1] - 0.5) / 0.5, 3))) +
-    theme_bw()
-)
-
-
-#MODELO 2 calciulo de TF2 com "n", "TF1"
-MODELO_BINOMIAL2 <- glm(formula = TF2 ~ . -Paciente -FilePath,
-                       family = "binomial",
-                       data = PRINCIPAL)
-summary(MODELO_BINOMIAL2)
-step(MODELO_BINOMIAL2) -> MODELO_BINOMIAL_STEP2
-
-
-summary(MODELO_BINOMIAL_STEP2)
-logLik(MODELO_BINOMIAL_STEP2)
-lrtest(MODELO_BINOMIAL_STEP2)
-
-confusionMatrix(table(predict(MODELO_BINOMIAL_STEP2, type = "response") >= 0.5, PRINCIPAL$TF2 == 1)[2:1,2:1])
-
-
-data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP2,
-                                                         type = "response") >= 0.5,
-                                                 PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Sensitivity"]],
-           Especificidade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP2,
-                                                          type = "response") >= 0.5,
-                                                  PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Specificity"]],
-           Acurácia = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP2,
-                                                    type = "response") >= 0.5,
-                                            PRINCIPAL$TF2 == 1)[2:1, 2:1])[["overall"]][["Accuracy"]]) %>% 
-  kable() %>%
-  kable_styling(bootstrap_options = "striped", position = "center",
-                full_width = F, 
-                font_size = 27)
-
-
-ROC2 <- roc(response = PRINCIPAL$TF2, 
-           predictor = MODELO_BINOMIAL_STEP2$fitted.values)
-
-ggplotly(
-  ggroc(ROC2, color = "#440154FF", size = 1) +
-    geom_segment(aes(x = 1, xend = 0, y = 0, yend = 1),
-                 color="grey40",
-                 size = 0.2) +
-    labs(x = "Especificidade",
-         y = "Sensitividade",
-         title = paste("Área abaixo da curva:",
-                       round(ROC2$auc, 3),
-                       "|",
-                       "Coeficiente de Gini",
-                       round((ROC2$auc[1] - 0.5) / 0.5, 3))) +
-    theme_bw()
-)
-
-#MODELO 3 com "n" sem "TF1"
-
-MODELO_BINOMIAL3 <- glm(formula = TF2 ~ . -Paciente -FilePath -TF1,
-                       family = "binomial",
-                       data = PRINCIPAL)
-summary(MODELO_BINOMIAL3)
-step(MODELO_BINOMIAL3) -> MODELO_BINOMIAL_STEP3
-
-confusionMatrix(table(predict(MODELO_BINOMIAL_STEP3, type = "response") >= 0.5, PRINCIPAL$TF2 == 1)[2:1,2:1])
-
-
-data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP3,
-                                                         type = "response") >= 0.5,
-                                                 PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Sensitivity"]],
-           Especificidade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP3,
-                                                          type = "response") >= 0.5,
-                                                  PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Specificity"]],
-           Acurácia = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP3,
-                                                    type = "response") >= 0.5,
-                                            PRINCIPAL$TF2 == 1)[2:1, 2:1])[["overall"]][["Accuracy"]]) %>% 
-  kable() %>%
-  kable_styling(bootstrap_options = "striped", position = "center",
-                full_width = F, 
-                font_size = 27)
-
-
-ROC3 <- roc(response = PRINCIPAL$TF2, 
-            predictor = MODELO_BINOMIAL_STEP3$fitted.values)
-
-ggplotly(
-  ggroc(ROC3, color = "#440154FF", size = 1) +
-    geom_segment(aes(x = 1, xend = 0, y = 0, yend = 1),
-                 color="grey40",
-                 size = 0.2) +
-    labs(x = "Especificidade",
-         y = "Sensitividade",
-         title = paste("Área abaixo da curva:",
-                       round(ROC3$auc, 3),
-                       "|",
-                       "Coeficiente de Gini",
-                       round((ROC3$auc[1] - 0.5) / 0.5, 3))) +
-    theme_bw()
-)
-
-#Modelo 4 calculo de TF1
-
-MODELO_BINOMIAL4 <- glm(formula = TF1 ~ . -Paciente -FilePath -TF2,
+MODELO_TF1 <- glm(formula = TF1 ~ . -Paciente -FilePath -TF2,
                         family = "binomial",
                         data = PRINCIPAL)
-summary(MODELO_BINOMIAL4)
-step(MODELO_BINOMIAL4) -> MODELO_BINOMIAL_STEP4
+summary(MODELO_TF1)
+step(MODELO_TF1) -> MODELO_TF1_STEP
+summary(MODELO_TF1_STEP)
 
-confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4, type = "response") >= 0.5, PRINCIPAL$TF2 == 1)[2:1,2:1])
+confusionMatrix(table(predict(MODELO_TF1_STEP, type = "response") >= 0.35, PRINCIPAL$TF1 == 1)[2:1,2:1])
 
 
-data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4,
-                                                         type = "response") >= 0.5,
-                                                 PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Sensitivity"]],
-           Especificidade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4,
-                                                          type = "response") >= 0.5,
-                                                  PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Specificity"]],
-           Acurácia = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4,
-                                                    type = "response") >= 0.5,
-                                            PRINCIPAL$TF2 == 1)[2:1, 2:1])[["overall"]][["Accuracy"]]) %>% 
+data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_TF1_STEP,
+                                                         type = "response") >= 0.35,
+                                                 PRINCIPAL$TF1 == 1)[2:1, 2:1])[["byClass"]][["Sensitivity"]],
+           Especificidade = confusionMatrix(table(predict(MODELO_TF1_STEP,
+                                                          type = "response") >= 0.35,
+                                                  PRINCIPAL$TF1 == 1)[2:1, 2:1])[["byClass"]][["Specificity"]],
+           Acurácia = confusionMatrix(table(predict(MODELO_TF1_STEP,
+                                                    type = "response") >= 0.35,
+                                            PRINCIPAL$TF1 == 1)[2:1, 2:1])[["overall"]][["Accuracy"]]) %>% 
   kable() %>%
   kable_styling(bootstrap_options = "striped", position = "center",
                 full_width = F, 
                 font_size = 27)
 
 
-ROC4 <- roc(response = PRINCIPAL$TF2, 
-            predictor = MODELO_BINOMIAL_STEP4$fitted.values)
+ROC1 <- roc(response = PRINCIPAL$TF1, 
+            predictor = MODELO_TF1_STEP$fitted.values)
 
 ggplotly(
-  ggroc(ROC4, color = "#440154FF", size = 1) +
+  ggroc(ROC1, color = "#440154FF", size = 1) +
     geom_segment(aes(x = 1, xend = 0, y = 0, yend = 1),
                  color="grey40",
                  size = 0.2) +
     labs(x = "Especificidade",
          y = "Sensitividade",
          title = paste("Área abaixo da curva:",
-                       round(ROC4$auc, 3),
+                       round(ROC1$auc, 3),
                        "|",
                        "Coeficiente de Gini",
-                       round((ROC4$auc[1] - 0.5) / 0.5, 3))) +
-    theme_bw()
-)
-
-#Modelo 5 calculo de TF1 sem paciente17
-PRINCIPAL %>% group_by(Paciente) %>% filter(Paciente == "PACIENTE17") -> PACIENTE17
-
-anti_join(PRINCIPAL, PACIENTE17, by = "Paciente") -> SEM_17
-
-
-MODELO_BINOMIAL5 <- glm(formula = TF1 ~ . -Paciente -FilePath -TF2,
-                        family = "binomial",
-                        data = SEM_17)
-summary(MODELO_BINOMIAL5)
-step(MODELO_BINOMIAL5) -> MODELO_BINOMIAL_STEP5
-
-confusionMatrix(table(predict(MODELO_BINOMIAL_STEP5, type = "response") >= 0.5, SEM_17$TF2 == 1)[2:1,2:1])
-
-
-data.frame(Sensitividade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4,
-                                                         type = "response") >= 0.5,
-                                                 PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Sensitivity"]],
-           Especificidade = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4,
-                                                          type = "response") >= 0.5,
-                                                  PRINCIPAL$TF2 == 1)[2:1, 2:1])[["byClass"]][["Specificity"]],
-           Acurácia = confusionMatrix(table(predict(MODELO_BINOMIAL_STEP4,
-                                                    type = "response") >= 0.5,
-                                            PRINCIPAL$TF2 == 1)[2:1, 2:1])[["overall"]][["Accuracy"]]) %>% 
-  kable() %>%
-  kable_styling(bootstrap_options = "striped", position = "center",
-                full_width = F, 
-                font_size = 27)
-
-
-ROC4 <- roc(response = PRINCIPAL$TF2, 
-            predictor = MODELO_BINOMIAL_STEP4$fitted.values)
-
-ggplotly(
-  ggroc(ROC4, color = "#440154FF", size = 1) +
-    geom_segment(aes(x = 1, xend = 0, y = 0, yend = 1),
-                 color="grey40",
-                 size = 0.2) +
-    labs(x = "Especificidade",
-         y = "Sensitividade",
-         title = paste("Área abaixo da curva:",
-                       round(ROC4$auc, 3),
-                       "|",
-                       "Coeficiente de Gini",
-                       round((ROC4$auc[1] - 0.5) / 0.5, 3))) +
+                       round((ROC1$auc[1] - 0.5) / 0.5, 3))) +
     theme_bw()
 )
 
 
 
 #### COMPARANDO MODELOS ####
-logLik(MODELO_BINOMIAL_STEP)
-logLik(MODELO_BINOMIAL_STEP2)
-logLik(MODELO_BINOMIAL_STEP3)
-logLik(MODELO_BINOMIAL_STEP4)
-lrtest(MODELO_BINOMIAL_STEP, MODELO_BINOMIAL_STEP2, MODELO_BINOMIAL_STEP3)
+logLik(MODELO_TF1_STEP)
+lrtest(MODELO_TF1,MODELO_TF1_STEP)
 
-
-
-my_plot <-
-  data.frame(MODELO1 = logLik(MODELO_BINOMIAL_STEP),
-             MODELO2 = logLik(MODELO_BINOMIAL_STEP2),
-             MODELO3 = logLik(MODELO_BINOMIAL_STEP3)) %>% 
- data.table::melt() 
-names_data_modelo <- c("MODELO", "LOGLIK")
-names(my_plot) <- names_data_modelo
 
 ####### Criando base de teste para aplicar o modelo #######
 
