@@ -514,10 +514,45 @@ espadon::dicom.browser(XXxxXX)
 dicom.raw
 
 
-  
+
 
 scanDicom(path ="~/Desktop/1.2.840.113704.1.111.1532.1503312054.1/", verbosity = 3, forceStack = TRUE) -> novo_divest
 
 readDicom(novo_divest$rootPath[1]) -> tt
 
 image(tt)
+
+remotes::install_github("muschellij2/dcmtk")
+library(dcmtk)
+dcmtk_filename(version = )
+
+install.packages("dcmtk")
+dcmj2pnm()
+  dcmj2pnm(path1)
+PRINCIPAL[1,1]
+path1 = "~/Desktop/DATA-SET_TESTE/AAAAA/T20140208000021_NDEBORA_LOURENCO_DE_LIMA_S7/1.2.840.113704.1.111.5464.1391825219.35564.dcm"
+
+PRINCIPAL$VETOR[1]
+PRINCIPAL$FilePath[1]
+
+
+dcmj2pnm("~/Desktop/DATA-SET_TESTE/AAAAA/T20140208000021_NDEBORA_LOURENCO_DE_LIMA_S7/1.2.840.113704.1.111.5464.1391825219.35566.dcm", outfile = "~/Desktop/USP/TCC/projeto_TCC/123.png") -> dcm 
+
+dcmj2pnm(PRINCIPAL$FilePath[1]) -> dcmtk1
+lfpc <- function(arg1) {
+  arg1 <- dcmj2pnm(arg1, outfile = "~/Desktop/USP/TCC/projeto_TCC/*.png") 
+
+  }
+
+for (i in PRINCIPAL$FilePath) {
+  dcmdjpeg(i)
+} -> assq
+
+
+lfpc(PRINCIPAL$FilePath[1]) -> lfpc1
+
+
+readDICOMFile("~/Desktop/DATA-SET_TESTE/AAAAA/T20150818162802_NWILSON_ROBERTO_PEREIRA_S4/1.2.840.113704.1.111.7736.1439926520.10885.dcm") -> azao
+graphics::image(t(azao$img))
+raster::image(azao$img)
+as_image(azao$img)

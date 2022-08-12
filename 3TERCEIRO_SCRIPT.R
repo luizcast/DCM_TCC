@@ -19,14 +19,15 @@
 
 ##### PACKAGES #####
 ## Principais DICOM Packages utilizados :
-#"oro.dicom", "divest", "tidyverse", "data.table" 
+#"oro.dicom", "divest", "tidyverse", "data.table", "dcmtk"
 
+#remotes::install_github("muschellij2/dcmtk")
 ## Como referência para outros projetos
 #"RNifti", "espadon"
 
 pacotes <- c("oro.dicom", "tidyverse", "plotly", "readr","imager", "raster", 
              "radtools", "divest", "data.table", "kableExtra", "lmtest", "caret",
-             "pROC")
+             "pROC", "dcmtk")
  
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
@@ -128,13 +129,12 @@ transform(novas_variaveis,
           ReconstructionDiameter = as.numeric(ReconstructionDiameter),
           DataCollectionDiameter = as.numeric(DataCollectionDiameter),
           ExposureTime = as.numeric(ExposureTime),
-          ExposureTimeInms = as.numeric(ExposureTimeInms),
           TableHeight = as.numeric(TableHeight)
 ) -> novas_variaveis
 
 glimpse(novas_variaveis)
 
-#write_csv(novas_variaveis, "base_para_anotacao.csv")
+write_csv(novas_variaveis, "base_para_anotacao.csv")
 
 #Aqui foram inseridas as anotaçãos sobre a posição  das imagens de interesse 
 # na sequencia de fotos. 
@@ -143,6 +143,7 @@ glimpse(novas_variaveis)
 #### BASE PRINCIPAL ####
 
 BASE_PRINCIPAL <- read_csv("BASE_PRINCIPAL.csv")
+glimpse(BASE_PRINCIPAL)
 BASE_PRINCIPAL$ExposureTimeInms <- gsub(BASE_PRINCIPAL$ExposureTimeInms, pattern = ",", replacement = ".")
 BASE_PRINCIPAL$ExposureTimeInms <- as.numeric(BASE_PRINCIPAL$ExposureTimeInms)
 
@@ -310,6 +311,8 @@ glimpse(treino_1)
 
 write_csv2(treino_1, "treino_1.csv")
 
+## 
+
 library(readr)
 treino_excel <- read_delim("treino_excel.csv", 
                            delim = ";", escape_double = FALSE, trim_ws = TRUE)
@@ -332,10 +335,32 @@ predict(object = MODELO_TF1_STEP,
 TREINO %>% mutate(fit = predict_treino) -> TREINO_FIT
 
 
-TREINO_FIT %>% filter(fit >= 0.35) -> TREINO_SELECT
+TREINO_FIT %>% filter(fit >= 0.30) -> TREINO_SELECT
+
+######## MUITA ATENCAO NESSE LOOP ########
+#aqui usaremos apenas as imagens selecionadas pelo modelo :)
+
+PRINCIPALZINHA <- PRINCIPAL[1:10,]
 
 
-##########PLOT INTERESSANTE DO DATACAMP
+lfpc <- function(arg1) {
+  dcmj2pnm(arg1, opt = "--write-16-bit-png")
+}
+
+PRINCIPALZINHA %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath)) -> nova
+
+#_!!! Parabéns Luiz !!!_#
+
+
+##Agora vamos para a base BASE_MODELO_FIT 
+BASE_MODELO_FIT %>% group_by(FilePath) %>% mutate(png = lfpc(FilePath)) -> BASE_MODELO_FIT
+
+BASE_MODELO_FIT %>%  dplyr::relocate(png, .after = FilePath) -> BASE_MODELO_FIT
+
+write_csv(BASE_MODELO_FIT, "base_modelo.csv")
+
+###### PLOT INTERESSANTE DO DATACAMP ######
 
 ggplot(akl_daily, aes(x = max_temp, y = month, height = ..density..)) +
   geom_density_ridges(stat = "density")
+
