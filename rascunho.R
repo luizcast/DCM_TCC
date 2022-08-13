@@ -556,3 +556,8 @@ readDICOMFile("~/Desktop/DATA-SET_TESTE/AAAAA/T20150818162802_NWILSON_ROBERTO_PE
 graphics::image(t(azao$img))
 raster::image(azao$img)
 as_image(azao$img)
+
+
+prob()
+
+samp1le()

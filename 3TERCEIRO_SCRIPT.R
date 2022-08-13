@@ -15,11 +15,11 @@
 
 ##### Elimina Arquivos fora de padrão e maiores que o padrão com tamanho 538,0kb #####
 #no terminal: find -size +540k -exec rm -r {} {} \; find -size -100k -exec rm -r {} {} \;
-
+#(reduz a chance de haver um erro!)
 
 ##### PACKAGES #####
 ## Principais DICOM Packages utilizados :
-#"oro.dicom", "divest", "tidyverse", "data.table", "dcmtk"
+#"oro.dicom", "divest", "tidyverse", "data.table", "dcmtk", "readr"
 
 #remotes::install_github("muschellij2/dcmtk")
 ## Como referência para outros projetos
@@ -27,7 +27,7 @@
 
 pacotes <- c("oro.dicom", "tidyverse", "plotly", "readr","imager", "raster", 
              "radtools", "divest", "data.table", "kableExtra", "lmtest", "caret",
-             "pROC", "dcmtk")
+             "pROC", "dcmtk", "readr")
  
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
@@ -41,7 +41,7 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
 
 
 
-###_OBTENDO A BASE DE TRABALHO_####
+###_CRIANDO BASE DE TRABALHO_####
 
 #Import List
 
@@ -359,6 +359,86 @@ BASE_MODELO_FIT %>%  dplyr::relocate(png, .after = FilePath) -> BASE_MODELO_FIT
 
 write_csv(BASE_MODELO_FIT, "base_modelo.csv")
 
+
+##### EXTRAINDO INSIGHTS DAS TABELAS IMAGENS #####
+
+BASE_MODELO_FIT<- read_csv("base_modelo.csv")
+View(base_modelo)
+
+
+oro.dicom::readDICOMFile("~/Desktop/DATA-SET_TESTE/AAAAA/T20150916211316_NVANUSA_DA_SILVA_ARAUJO_S4/1.2.840.113704.1.111.3372.1442449109.13542.dcm") -> pacie
+pacie$img -> pacie_img
+class(pacie_img)
+
+pacie <- function(i) {
+  as.integer(i)
+}
+
+pacie_img %>% as.integer() -> pacie_num
+
+map(teste1_img, as.(teste1_img)) -> tttt
+lapply(teste1_img, as.character(teste1_img)) -> simmm
+
+for (i in 1:length(teste1_img)) {
+  i %>% as.vector() -> pac
+}
+
+for (i in 1:length(teste1_img)) {
+  i %>% mutate(vetor = as.vector()) -> pac
+}
+
+
+summary(pacie_num)
+sum(pacie_num == 0)
+sum(pacie_num == 206)
+
+summary(pacie_num) %>% as.array() %>% as.data.frame() %>% t() %>% as.data.frame() %>% subset()-> obj
+
+class(obj)
+obj
+
+oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/AAAAA/T20150916211316_NVANUSA_DA_SILVA_ARAUJO_S4/", verbose = TRUE) -> teste1
+
+teste1$img -> teste1_img
+glimpse(teste1_img)
+head(teste1_img, 2)
+class(teste1_img[[1]])
+teste1_img[[1]] %>% as.numeric()
+
+library(imager)
+
+load.image() -> im
+
+for (i in teste1_img[[]]) {
+  as.numeric(i) 
+}
+sample()
+df <- data.frame(matrix(unlist(teste1_img), nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE) %>% t()
+matplot()
+df1 <- data.frame(matrix(teste1_img, nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE)
+df1 %>% rbind()
+df1$
+glimpse(df)
+df %>% cbind() -> aa
+df %>% s
+
+list_modify()
+todos_nums <- function(arg1) {
+  as.integer(arg1)
+}
+imap_int(teste1_img, as.vector(teste1_img))
+
+teste1_img %>% t() -> a
+a[[2]]
+teste1_img %>% unlist() ->a
+
+for (i in teste1_img) {
+  as.integer(i)
+} -> ass
+
+map(teste1_img, )
+
+transmute(test)
 ###### PLOT INTERESSANTE DO DATACAMP ######
 
 ggplot(akl_daily, aes(x = max_temp, y = month, height = ..density..)) +
