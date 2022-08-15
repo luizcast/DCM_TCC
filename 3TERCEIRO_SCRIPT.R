@@ -343,8 +343,8 @@ TREINO_FIT %>% filter(fit >= 0.30) -> TREINO_SELECT
 PRINCIPALZINHA <- PRINCIPAL[1:10,]
 
 
-lfpc <- function(arg1) {
-  dcmj2pnm(arg1, opt = "--write-16-bit-png")
+lfpc <- function(arg1, arg2) {
+  dcmj2pnm(arg1, opt = arg2)
 }
 
 PRINCIPALZINHA %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath)) -> nova
@@ -353,7 +353,7 @@ PRINCIPALZINHA %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath)) -> nova
 
 
 ##Agora vamos para a base BASE_MODELO_FIT 
-BASE_MODELO_FIT %>% group_by(FilePath) %>% mutate(png = lfpc(FilePath)) -> BASE_MODELO_FIT
+BASE_MODELO_FIT %>% group_by(FilePath) %>% mutate(jpeg = lfpc(FilePath, "--write-jpeg")) -> BASE_MODELO_FIT
 
 BASE_MODELO_FIT %>%  dplyr::relocate(png, .after = FilePath) -> BASE_MODELO_FIT
 
@@ -363,12 +363,18 @@ write_csv(BASE_MODELO_FIT, "base_modelo.csv")
 ##### EXTRAINDO INSIGHTS DAS TABELAS IMAGENS #####
 
 BASE_MODELO_FIT<- read_csv("base_modelo.csv")
-View(base_modelo)
+View(BASE_MODELO_FIT)
 
 
 oro.dicom::readDICOMFile("~/Desktop/DATA-SET_TESTE/AAAAA/T20150916211316_NVANUSA_DA_SILVA_ARAUJO_S4/1.2.840.113704.1.111.3372.1442449109.13542.dcm") -> pacie
-pacie$img -> pacie_img
+pacie$img %>% as.integer()-> pacie_img
+
 class(pacie_img)
+
+
+
+#BASE_MODELO_FIT %>% group_by(FilePath) %>% mutate(numero_imgs = ) -> BASE_MODELO_FIT
+
 
 pacie <- function(i) {
   as.integer(i)
@@ -400,10 +406,31 @@ obj
 oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/AAAAA/T20150916211316_NVANUSA_DA_SILVA_ARAUJO_S4/", verbose = TRUE) -> teste1
 
 teste1$img -> teste1_img
+
+
+for (i in teste1_img[i]) {
+  
+}
+
+toString(teste1_img[1]) %>% as.numeric() -> stsss
+
+teste1_img[1] %>% data.table::subset() %>% as.character() 
+summary(stsss)
+
+
+as.data.frame(t(teste1_img)) -> imgs
+glimpse(imgs)
+class(imgs)
+head(imgs)
+imgs[[1]]
+
+rbindlist(imgs, use.names = FALSE) -> tchan
+imgs
+
 glimpse(teste1_img)
 head(teste1_img, 2)
 class(teste1_img[[1]])
-teste1_img[[1]] %>% as.numeric()
+teste1_img[[1]] %>% as.numeric() %>% mutate()
 
 library(imager)
 
@@ -412,10 +439,13 @@ load.image() -> im
 for (i in teste1_img[[]]) {
   as.numeric(i) 
 }
-sample()
-df <- data.frame(matrix(unlist(teste1_img), nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE) %>% t()
+
+df <- data.frame(matrix(as.numeric(teste1_img), nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE)
+df %>% group_by()
+head(df, 1)
+print(teste1_img[1]) %>% toString()
 matplot()
-df1 <- data.frame(matrix(teste1_img, nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE)
+df1 <- data.frame(matrix(unlist(teste1_img), nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE)
 df1 %>% rbind()
 df1$
 glimpse(df)
@@ -444,3 +474,10 @@ transmute(test)
 ggplot(akl_daily, aes(x = max_temp, y = month, height = ..density..)) +
   geom_density_ridges(stat = "density")
 
+
+
+
+x <- c("a", "b", "aaaaaaaaaaa")
+x
+toString(x)
+toString(x, width = 8)
