@@ -45,10 +45,10 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
 
 #Import List
 
-oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/AAAAA/", verbose = TRUE) -> ID
+oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/AAAAA/T20150818162802_NWILSON_ROBERTO_PEREIRA_S4/", verbose = TRUE) -> ID
 ID_hdr <- ID$hdr
 map(ID_hdr,
-    ~dplyr::filter(.x, grepl("SeriesNumber|InstanceNumber|SliceLocation|ReconstructionDiameter|DataCollectionDiameter|ExposureTime| SpaceBetweenSlices|TableHeight|Exposure", name))) -> 
+    ~dplyr::filter(.x, name == "PatientID")) -> 
   ID_MAIOR
 ID_MAIOR[1] %>% kable() %>%
   kable_styling(bootstrap_options = "striped",
@@ -144,13 +144,14 @@ write_csv(novas_variaveis, "base_para_anotacao.csv")
 
 BASE_PRINCIPAL <- read_csv("BASE_PRINCIPAL.csv")
 glimpse(BASE_PRINCIPAL)
+
 BASE_PRINCIPAL$ExposureTimeInms <- gsub(BASE_PRINCIPAL$ExposureTimeInms, pattern = ",", replacement = ".")
 BASE_PRINCIPAL$ExposureTimeInms <- as.numeric(BASE_PRINCIPAL$ExposureTimeInms)
 
 BASE_PRINCIPAL %>% group_by(Paciente) %>% count() %>% inner_join(BASE_PRINCIPAL, by = "Paciente") %>% 
     ungroup() %>% dplyr::relocate( Paciente, n, .after = FilePath) -> PRINCIPAL
 glimpse(PRINCIPAL)
-head(PRINCIPAL)
+head(PRINCIPAL, 10)
 
 
 #### Primeiros Insights ####
@@ -188,7 +189,7 @@ PRINCIPAL_FACTOR %>% ggplot(aes(x = SliceLocation, y = Paciente, color = TF1)) +
 #### MODELOS #####
 #MODELO TF1
 
-MODELO_TF1 <- glm(formula = TF1 ~ . -Paciente -FilePath -TF2,
+MODELO_TF1 <- glm(formula = TF1 ~ . -Paciente -FilePath -TF2 -TableHeight -SeriesNumber -DrNitamar -DataCollectionDiameter,
                         family = "binomial",
                         data = PRINCIPAL)
 summary(MODELO_TF1)
@@ -233,7 +234,7 @@ ggplotly(
 )
 
 PRINCIPAL %>%  dplyr::mutate(fit = MODELO_TF1_STEP$fitted.values)  %>% 
-  dplyr::select(FilePath, Paciente, n, InstanceNumber, SliceLocation, ExposureTime, TableHeight, fit) -> 
+  dplyr::select(FilePath, Paciente, n, InstanceNumber, SliceLocation, ExposureTime, fit) -> 
   BASE_MODELO_FIT
 
 BASE_MODELO_FIT %>% filter(fit >= 0.35) -> BASE_VESICULA1
@@ -297,6 +298,7 @@ k3[ID_TableHeight, on = .(name)] -> k4
 
 treino_1 <- as_tibble(k4)
 
+
 nomes_treino <- c("FilePath", 
                 "SeriesNumber", 
                 "InstanceNumber", 
@@ -347,9 +349,11 @@ lfpc <- function(arg1, arg2) {
   dcmj2pnm(arg1, opt = arg2)
 }
 
-PRINCIPALZINHA %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath)) -> nova
 
-#_!!! Parabéns Luiz !!!_#
+PRINCIPALZINHA %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath, "--write-raw-pnm")) -> nova
+TREINO_SELECT %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath, "--write-raw-pnm")) -> nova_select
+BASE_MODELO_FIT %>% group_by(FilePath)  %>% mutate(AAA = lfpc(FilePath, "--write-raw-pnm")) -> checkout
+
 
 
 ##Agora vamos para a base BASE_MODELO_FIT 
@@ -364,10 +368,11 @@ write_csv(BASE_MODELO_FIT, "base_modelo.csv")
 
 BASE_MODELO_FIT<- read_csv("base_modelo.csv")
 View(BASE_MODELO_FIT)
-
+glimpse(BASE_MODELO_FIT)
 
 oro.dicom::readDICOMFile("~/Desktop/DATA-SET_TESTE/AAAAA/T20150916211316_NVANUSA_DA_SILVA_ARAUJO_S4/1.2.840.113704.1.111.3372.1442449109.13542.dcm") -> pacie
 pacie$img %>% as.integer()-> pacie_img
+
 
 class(pacie_img)
 
@@ -396,88 +401,65 @@ for (i in 1:length(teste1_img)) {
 
 summary(pacie_num)
 sum(pacie_num == 0)
-sum(pacie_num == 206)
+sum(pacie_num == 3000)
 
 summary(pacie_num) %>% as.array() %>% as.data.frame() %>% t() %>% as.data.frame() %>% subset()-> obj
 
 class(obj)
 obj
 
-oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/AAAAA/T20150916211316_NVANUSA_DA_SILVA_ARAUJO_S4/", verbose = TRUE) -> teste1
+oro.dicom::readDICOM("~/Desktop/DATA-SET_TESTE/AAAAA/T20150905130256_NWALTER_LAURO_RIZZO_S5/", verbose = TRUE) -> teste1
+oro.dicom::readDICOMFile("~/Desktop/DATA-SET_TESTE/AAAAA/T20150905130256_NWALTER_LAURO_RIZZO_S5/1.2.840.113704.1.111.35844.1441469360.80446.dcm") -> uau
+
 
 teste1$img -> teste1_img
+512*512
+lapply(teste1_img, as.numeric) -> aaa
+rbind(aaa) %>% data.frame() -> bbb
+
+aaa
+glimpse(aaa)
+class(aaa[1])
+class(aaa[[]])
+aaa %>% t() %>% data.frame() -> bbb
+
+lapply(teste1_img, as.numeric) -> qqqq
+rbind(qqqq) -> wwwwww
 
 
-for (i in teste1_img[i]) {
-  
-}
-
-toString(teste1_img[1]) %>% as.numeric() -> stsss
-
-teste1_img[1] %>% data.table::subset() %>% as.character() 
-summary(stsss)
+lapply(aa, data.frame) -> aqqq
 
 
-as.data.frame(t(teste1_img)) -> imgs
-glimpse(imgs)
-class(imgs)
-head(imgs)
-imgs[[1]]
+rbindlist(qqqq) -> a
 
-rbindlist(imgs, use.names = FALSE) -> tchan
-imgs
+rbind(aa) -> kk
 
-glimpse(teste1_img)
-head(teste1_img, 2)
-class(teste1_img[[1]])
-teste1_img[[1]] %>% as.numeric() %>% mutate()
 
-library(imager)
+as.data.frame(aa) %>% -> kkk
+kkkk %>% group_by()
 
-load.image() -> im
 
-for (i in teste1_img[[]]) {
-  as.numeric(i) 
-}
 
-df <- data.frame(matrix(as.numeric(teste1_img), nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE)
-df %>% group_by()
-head(df, 1)
-print(teste1_img[1]) %>% toString()
-matplot()
-df1 <- data.frame(matrix(unlist(teste1_img), nrow=length(teste1_img), byrow=TRUE), stringsAsFactors = FALSE)
-df1 %>% rbind()
-df1$
-glimpse(df)
-df %>% cbind() -> aa
-df %>% s
 
-list_modify()
-todos_nums <- function(arg1) {
-  as.integer(arg1)
-}
-imap_int(teste1_img, as.vector(teste1_img))
+glimpse(bind)
 
-teste1_img %>% t() -> a
-a[[2]]
-teste1_img %>% unlist() ->a
 
-for (i in teste1_img) {
-  as.integer(i)
-} -> ass
-
-map(teste1_img, )
-
-transmute(test)
 ###### PLOT INTERESSANTE DO DATACAMP ######
 
 ggplot(akl_daily, aes(x = max_temp, y = month, height = ..density..)) +
   geom_density_ridges(stat = "density")
 
-
+broom::
 
 
 x <- c("a", "b", "aaaaaaaaaaa")
 x
 toString(x)
 toString(x, width = 8)
+
+PRINCIPAL %>% dplyr::select(-TF2, -DrNitamar)
+
+##############
+
+annot_clean %>% as_tibble() -> annot
+glimpse(annot)

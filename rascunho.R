@@ -13,8 +13,11 @@ readDICOMfiletered(i) {
   return(dicom)
 }
 
+library(dplyr)
 
   print(files_list_paciente1)
+  
+  (x == 6 ) & (y == 6)
   
 ##########################################################
 
@@ -561,3 +564,38 @@ as_image(azao$img)
 prob()
 
 samp1le()
+library(DBI)
+DBI::
+
+jon
+jsonlite::
+ } 
+  
+  x <- c("April", "May", "September")
+
+for
+(i in 
+ length(x)
+){
+  print(
+    x
+  )
+}
+  
+  
+x <- list(c(TRUE * 50))
+x  
+print(x)
+x
+
+x <- c(-4, 9, 7, -2)
+
+ifelse(x > 0, "Positive", "Negative")
+
+x <- c(1, 2, 3)
+c(2) = 5
+x
+
+x <- c(1, 2, 3)
+x(2) = 5
+x
