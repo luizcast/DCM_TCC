@@ -8,11 +8,11 @@
 #O R não realiza leitura direta das imagens DICOM (ainda(?))
 
 ##### SORT RENAME por SERIE NUMBER #####
-#no R: ttt <- c("/home/luiz/Desktop/DATA-SET/")
-#as.data.frame(ttt) -> va
-#sortDicom(path =va[1,], depth = 1000, forceStack = TRUE)
+ttt <- c("/home/luiz/Desktop/USP/TCC/MATERIAL/DATA-SET/")
+as.data.frame(ttt) -> va
+sortDicom(path =va[1,], depth = 1000, labelFormat = "%t", forceStack = FALSE)
 
-
+sortDicom(labelFormat = "%t")
 ##### Elimina Arquivos fora de padrão e maiores que o padrão com tamanho 538,0kb #####
 #no terminal: find -size +540k -exec rm -r {} {} \; find -size -100k -exec rm -r {} {} \;
 #(reduz a chance de haver um erro!)
@@ -463,3 +463,5 @@ PRINCIPAL %>% dplyr::select(-TF2, -DrNitamar)
 
 annot_clean %>% as_tibble() -> annot
 glimpse(annot)
+readDICOMFile("~/Desktop/USP/TCC/MATERIAL/DATA-SET/1.2.840.113704.1.111.10064.1475365678.1/1.2.840.113704.1.111.1892.1475365860.111497.dcm") -> uaa
+readDICOMFile("~/Desktop/USP/TCC/DATA-SET-DR-IGOR/1.2.840.113704.1.111.10024.1500721597.1/1.2.840.113704.1.111.3180.1500721776.113280.dcm")
