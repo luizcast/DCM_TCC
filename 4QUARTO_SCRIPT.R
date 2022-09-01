@@ -12,7 +12,7 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   sapply(pacotes, require, character = T) 
 }
 
-installed.packages(kableExtra)
+
 
 ### Preparando Base annot_clean
 

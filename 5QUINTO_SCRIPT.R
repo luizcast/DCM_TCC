@@ -7,6 +7,7 @@ path = "/home/luiz/Desktop/DATA-SET_TESTE/"
 
 #### Preparando Base annot_clean ####
 
+#
 annot_clean <- read_excel("~/Desktop/USP/TCC/MATERIAL/ZIPS/notebooks/annot_clean.xlsx")
 View(annot_clean)
 
@@ -27,7 +28,9 @@ annot_clean$`Densidade não habitual (sim=1, não=0)` <- as.numeric(annot_clean$
 glimpse(annot_clean)
 
 
-#######################
+###### Uma funçao para enteragir com a arquivo DICOM carregado na memória #####
+#desta forma é impossível trabalhar com grandes volumes de arquivos. Porém, segmentando
+#a imagem em blocos menores do que 14Gb é possivel manipula-las.
 
 prepare_dicom <- function(path_dicom) {
   
@@ -58,38 +61,37 @@ prepare_dicom <- function(path_dicom) {
 prepare_dicom("~/Desktop/DATA-SET_TESTE/AAAAA/") -> amostra
 
 
-
 glimpse(amostra)
-
 glimpse(annot_clean)
 
-names(annot_clean)
-names(um)
 
 ##### PREPARANDO BASINHA QUE VAI GERAR AS IMAGENS : BASE_nw #####
 
 list.files(path) %>%  as_tibble() -> tiblinha
-separate_rows(tiblinha, value, sep = "_") -> new
-separate(tiblinha, col = value, sep = "_", into = c("I","L","C")) -> new
-new$C %>% str_sub(end=-5) -> new$C
+separate(tiblinha, col = value, sep = "_", into = c("PatientID","SerieNumber","InstanceNumber")) -> new
+new$InstanceNumber %>% str_sub(end=-5) -> new$InstanceNumber
 bind_cols(tiblinha,new) -> nw
   nw
-names(nw) <- c("arq_name","PatientID","SerieNumber","InstanceNumber")
+names(nw) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
 
           nw$PatientID <- as.numeric(nw$PatientID)
           nw$SerieNumber = as.numeric(nw$SerieNumber)
           nw$InstanceNumber = as.numeric(nw$InstanceNumber) 
 
+#join com annot_clean
 nw %>% group_by(PatientID) %>% 
   left_join(annot_clean, by = c("PatientID" = "Patient ID")) %>% 
   ungroup() -> full
+
 
 full %>% dplyr::select(1:9) -> full_tratada
 full_tratada %>% dplyr::select(-5) -> full_tratada
 glimpse(full_tratada)
 write_csv(full, "full.csv")
 write_csv(full_tratada, "full_tratada.csv")
-
+full_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)-> frequencia_por_serie
+frequencia_por_serie
+table(frequencia_por_serie$n)
 
 full_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C") -> full_clipe
 glimpse(full_clipe)
@@ -103,12 +105,18 @@ full_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `
 full_vesicula_normal %>% filter(posicao_interesse == 1) -> frames_vesicula_normal
 frames_vesicula_normal
 
+
+
 frames_vesicula_normal$caminho <- paste(file.path(path),frames_vesicula_normal$arq_name, sep = "")
 
-lfpc <- function(arg1, arg2) {
-  dcmj2pnm(arg1, opt = arg2, outfile = )
+#### GERANDO BANCO DE IMAGENS #####
+
+#funcaozinha para indexar a img temporária
+
+temp_dcm_export <- function(arg1, arg2) {
+  dcmj2pnm(arg1, opt = arg2, outfile = "--write-raw-pnm")
 }
 
-frames_vesicula_normal %>% group_by(caminho) %>% mutate(ImagePath = lfpc(caminho, "--write-raw-pnm")) -> com_img
+frames_vesicula_normal %>% group_by(caminho) %>% mutate(ImagePath = temp_dcm_export(caminho)) -> com_imgs_temporaria
 
 table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
