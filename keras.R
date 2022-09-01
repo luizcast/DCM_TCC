@@ -8,6 +8,7 @@ library(tensorflow)
 path = "~/Desktop/"
 BATH_SIZE = 50
 
+image_dataset_from_directory('~/Desktop/DATA-SET_TESTE/') -> sera
 
 data_generator <- keras::image_data_generator(rescale = 1./255, validation_split = 0.30)
 

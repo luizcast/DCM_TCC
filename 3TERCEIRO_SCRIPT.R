@@ -8,9 +8,9 @@
 #O R não realiza leitura direta das imagens DICOM (ainda(?))
 
 ##### SORT RENAME por SERIE NUMBER #####
-ttt <- c("/home/luiz/Desktop/USP/TCC/MATERIAL/DATA-SET/")
-as.data.frame(ttt) -> va
-sortDicom(path =va[1,], depth = 1000, labelFormat = "%t", forceStack = FALSE)
+#ttt <- c("/home/luiz/Desktop/USP/TCC/MATERIAL/DATA-SET/")
+#as.data.frame(ttt) -> va
+#sortDicom(path =va[1,], depth = 1000, labelFormat = "%t", forceStack = FALSE)
 
 sortDicom(labelFormat = "%t")
 ##### Elimina Arquivos fora de padrão e maiores que o padrão com tamanho 538,0kb #####
