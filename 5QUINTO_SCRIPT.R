@@ -87,10 +87,28 @@ nw %>% group_by(PatientID) %>%
 full %>% dplyr::select(1:9) -> full_tratada
 full_tratada %>% dplyr::select(-5) -> full_tratada
 glimpse(full_tratada)
+write_csv(full, "full.csv")
+write_csv(full_tratada, "full_tratada.csv")
 
-full_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C") -> ful_clipe
 
-levels(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
+full_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C") -> full_clipe
+glimpse(full_clipe)
+full_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "S") -> full_sem_clipe
+glimpse(full_sem_clipe)
+full %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") -> full_vesicula_hipodistendida
+glimpse(full_hipodistendida)
+full %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "V") -> full_vesicula_normal
+full_vesicula_normal
+full_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 2)) -> full_vesicula_normal
+full_vesicula_normal %>% filter(posicao_interesse == 1) -> frames_vesicula_normal
+frames_vesicula_normal
 
-annot_clean %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C","S")) -> base_sem_vesicula
-annot_clean %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V")) -> base_com_vesicula
+frames_vesicula_normal$caminho <- paste(file.path(path),frames_vesicula_normal$arq_name, sep = "")
+
+lfpc <- function(arg1, arg2) {
+  dcmj2pnm(arg1, opt = arg2, outfile = )
+}
+
+frames_vesicula_normal %>% group_by(caminho) %>% mutate(ImagePath = lfpc(caminho, "--write-raw-pnm")) -> com_img
+
+table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
