@@ -165,7 +165,7 @@ head(frames_vesicula_normal) %>% group_by(FilePath) %>% mutate(ImagePath = temp_
 #gerando para saber qual serie
 bomba %>% group_by(FilePath) %>% mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg")) -> bomba_com_img
 
-
+bomba_com_img[is.na(1),]
 
 table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 
