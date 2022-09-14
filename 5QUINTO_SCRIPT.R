@@ -105,6 +105,8 @@ glimpse(full_tratada)
 #write_csv(full_tratada, "full_tratada.csv")
 
 #TABELAS FREQUENCIA
+table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
+
 full_tratada %>% count(c("PatientID","SerieNumber"))
 full_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)-> frequencia_por_serie
 frequencia_por_serie
@@ -127,6 +129,8 @@ full_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `
 full_vesicula_normal %>% filter(posicao_interesse == 1) -> frames_vesicula_normal
 glimpse(frames_vesicula_normal)
 #write_csv(frames_vesicula_normal, "frames_vesicula.csv")
+
+
 
 #QUAL SERA A SERIE?
 frames_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> tabela_para_descobrir_serie
@@ -157,17 +161,20 @@ NanaZinha %>% left_join(frames_vesicula_normal)
 
 
 #### GERANDO BANCO DE IMAGENS #####
-#funcaozinha para indexar a img temporária
-temp_dcm_export <- function(arg1, arg2){dcmj2pnm(arg1, opt = arg2)}
+#funcaozinha para indexar a img temporária na tabela
+temp_dcm_export <- function(arg1, arg2, arg3){dcmj2pnm(arg1, opt = arg2, outfile = arg3)}
 
 #PRONTO! SÓ GERAR!
-head(frames_vesicula_normal) %>% group_by(FilePath) %>% mutate(ImagePath = temp_dcm_export(FilePath, "--write-jpeg")) %>% ungroup()
 #gerando para saber qual serie
-bomba %>% group_by(FilePath) %>% mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg")) -> bomba_com_img
 
-bomba_com_img[is.na(1),]
+bomba %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", 
+                                     make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."), 
+                                                unique = TRUE))) -> bomba_com_img
 
-table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 
+list.files("~/Desktop/IMAGENS_KERAS/") %>%  as_tibble() -> vesic
+separate(vesic, col = value, sep = "_", into = c("NUM","fileName")) -> vesic
+vesic %>% select(fileName) %>% left_join(bomba_com_img)
 
-
+bomba_com_img %>% semi_join(vesic, by="fileName")                                                       
