@@ -37,6 +37,7 @@ path = "/home/luiz/Desktop/DATA-SET_TESTE/"
 #Esta base foi anotada pelos médicos da UNIFESP.
 read_excel("~/Desktop/USP/TCC/MATERIAL/ZIPS/notebooks/annot_clean.xlsx") %>% as_tibble() -> annot_clean
 tail(annot_clean)
+glimpse(annot_clean)
 gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Densidade não habitual (sim=1, não=0)`) -> annot_clean$`Densidade não habitual (sim=1, não=0)`
 gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte INICIAL vesícula`) -> annot_clean$`Corte INICIAL vesícula`
 gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte FINAL vesícula`) -> annot_clean$`Corte FINAL vesícula`
@@ -45,11 +46,16 @@ annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` <- as.facto
 annot_clean$`Corte FINAL vesícula` <- as.numeric(annot_clean$`Corte FINAL vesícula`)
 annot_clean$`Corte INICIAL vesícula` <- as.numeric(annot_clean$`Corte INICIAL vesícula`)
 annot_clean$`Densidade não habitual (sim=1, não=0)` <- as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
+
+annot_clean[170:180,]
 glimpse(annot_clean)
+
+table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 
 ###### (observacao) Uma funçao para enteragir com a arquivo DICOM carregado na memória #####
 #desta forma é impossível trabalhar com grandes volumes de arquivos. Porém, segmentando
 #a imagem em blocos menores do que 14Gb é possivel manipula-las.
+
 prepare_dicom <- function(path_dicom) {
   
   oro.dicom::readDICOM(path_dicom, verbose = TRUE) -> ID
@@ -79,67 +85,67 @@ glimpse(amostra)
 
 
 ##### Criando Dataset que vai gerar as imagens #####
-list.files(path) %>%  as_tibble() -> tiblinha
-separate(tiblinha, col = value, sep = "_", into = c("PatientID","SerieNumber","InstanceNumber")) -> new
-new$InstanceNumber %>% str_sub(end=-5) -> new$InstanceNumber
-bind_cols(tiblinha,new) -> nw
-  nw
-names(nw) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
+list.files(path) %>%  as_tibble() -> array_arquivos_dicom_tratados
+separate(array_arquivos_dicom_tratados, col = value, sep = "_", into = c("PatientID","SerieNumber","InstanceNumber")) -> index_dicom
+index_dicom$InstanceNumber %>% str_sub(end=-5) -> index_dicom$InstanceNumber
+bind_cols(array_arquivos_dicom_tratados,index_dicom) -> index_dicom
+  index_dicom
+names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
 
-          nw$PatientID <- as.numeric(nw$PatientID)
-          nw$SerieNumber = as.numeric(nw$SerieNumber)
-          nw$InstanceNumber = as.numeric(nw$InstanceNumber) 
+          index_dicom$PatientID <- as.numeric(index_dicom$PatientID)
+          index_dicom$SerieNumber = as.numeric(index_dicom$SerieNumber)
+          index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber) 
 
 #join com annot_clean
-nw %>% group_by(PatientID) %>% 
+index_dicom %>% group_by(PatientID) %>% 
   left_join(annot_clean, by = c("PatientID" = "Patient ID")) %>% 
-  ungroup() -> full
+  ungroup() -> index_dicom
+glimpse(index_dicom)
+
 
 
 #### GERANDO TABELAS #####
-full %>% dplyr::select(1:9) -> full_tratada
-full_tratada %>% dplyr::select(-5) -> full_tratada
-full_tratada$FilePath <- paste(file.path(path), full_tratada$FileName, sep='')
-glimpse(full_tratada)
+index_dicom %>% dplyr::select(1:9) -> base_tratada
+base_tratada %>% dplyr::select(-5) -> base_tratada
+base_tratada$FilePath <- paste(path, base_tratada$FileName, sep='')
+glimpse(base_tratada)
 #write_csv(full, "full.csv")
 #write_csv(full_tratada, "full_tratada.csv")
 
 #TABELAS FREQUENCIA
 table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 
-full_tratada %>% count(c("PatientID","SerieNumber"))
-full_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)-> frequencia_por_serie
+base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)-> frequencia_por_serie
 frequencia_por_serie
 table(frequencia_por_serie$n)
 #TABELA SEM VESICULA COM CLIPE : full_clipe
-full_clipe <- full_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C")
-glimpse(full_clipe)
+base_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C")
+glimpse(base_clipe)
 #TABELA SEM VESICULA SEM CLIPE : full_sem_clipe
-full_sem_clipe <- full_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "S")
-glimpse(full_sem_clipe)
+base_sem_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "S")
+glimpse(base_sem_clipe)
 #TABELA COM VESICULA HIPOESTENDIDA : full_vesicula_hipodistendida
-full_vesicula_hipodistendida <- full %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H")
-glimpse(full_hipodistendida)
+base_vesicula_hipodistendida <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H")
+glimpse(base_vesicula_hipodistendida)
 #TABELA COM VESICULA NORMAL : full_vesicula_normal
-full_vesicula_normal <- full %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "V")
-full_vesicula_normal
+base_vesicula_normal <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "V")
+base_vesicula_normal
 #TABELA COM AS IMAGENS DA VESICULA : frames_vesicula_normal
-full_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
-                                                               InstanceNumber <= `Corte FINAL vesícula`), 1, 2)) -> full_vesicula_normal
-full_vesicula_normal %>% filter(posicao_interesse == 1) -> frames_vesicula_normal
-glimpse(frames_vesicula_normal)
+base_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
+                                                               InstanceNumber <= `Corte FINAL vesícula`), 1, 2)) -> base_frames_vesicula_normal
+base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_vesicula_normal
+glimpse(base_frames_vesicula_normal)
 #write_csv(frames_vesicula_normal, "frames_vesicula.csv")
 
 
-
 #QUAL SERA A SERIE?
-frames_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> tabela_para_descobrir_serie
+base_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> tabela_n_por_serie
 tabela_para_descobrir_serie %>% count(PatientID)
 tabela_para_descobrir_serie
 
 #RETIRANDO DA TABELA A "IMAGENS NO MEIO" DE CASA SERIE
-frames_vesicula_normal %>% unite("ID_SERIE", PatientID:SerieNumber) -> ID_SERIE
-frames_vesicula_normal[!duplicated(ID_SERIE$ID_SERIE),] -> NanaZinha
+base_frames_vesicula_normal %>% unite("ID_SERIE", PatientID:SerieNumber) -> ID_SERIE
+base_frames_vesicula_normal[!duplicated(ID_SERIE$ID_SERIE),] -> NanaZinha
 NanaZinha$MEDIA <- c(NanaZinha$`Corte INICIAL vesícula`+NanaZinha$`Corte FINAL vesícula`)/2
 NanaZinha$MEDIA <- as.integer(NanaZinha$MEDIA)
 NanaZinha %>% unite("PatientID","PatientID","SerieNumber","MEDIA", sep = "_") %>% select(PatientID) -> gerador
@@ -148,33 +154,60 @@ bind_cols(gerador, PatienIDSerieNumberMEDIA) -> geradorPatienIDSerieNumberMEDIA
 geradorPatienIDSerieNumberMEDIA$FINAL <- paste("0000",geradorPatienIDSerieNumberMEDIA$PatientID...1,".dcm", sep = '')
 str_length(geradorPatienIDSerieNumberMEDIA$FINAL)
 geradorPatienIDSerieNumberMEDIA %>% mutate(FINAL = ifelse(str_length(FINAL) >= 20, str_sub(FINAL,start=2L), FINAL)) -> geradorPatienIDSerieNumberMEDIA
-geradorPatienIDSerieNumberMEDIA %>% left_join(frames_vesicula_normal, by=c("FINAL"="FileName")) %>% select(FilePath) -> bomba
+geradorPatienIDSerieNumberMEDIA %>% left_join(base_frames_vesicula_normal, by=c("FINAL"="FileName")) %>% select(FilePath) -> bomba
 str_length(geradorPatienIDSerieNumberMEDIA$FINAL)
 geradorPatienIDSerieNumberMEDIA
 
 
+base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c('H','V')) %>% select(1:6) %>% 
+  filter(str_length(FileName) <= 21)-> tabela_GLM
+tabela_GLM %>% left_join(tabela_n_por_serie) -> tabela_GLM
+tabela_GLM %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
+                                      InstanceNumber <= `Corte FINAL vesícula`), 1,0)) %>% select(-5,-6) -> tabela_GLM
 
-NanaZinha %>% select(-FileName, -InstanceNumber) %>% relocate(MEDIA,.after = SerieNumber) -> para_join
-names(para_join) -> nomes
-names(para_join$SerieNumber)
-NanaZinha %>% left_join(frames_vesicula_normal)
+glm(posicao_interesse~InstanceNumber+n, family = binomial, data = tabela_GLM) -> modelo_glm
+summary(modelo_glm)
+step(modelo_glm) -> step_modelo
+summary(step_modelo)
+# ^-- checar os NAs #
 
+
+tabela_GLM %>% filter(str_length(FileName) >= 22) -> tt
+anti_join(tabela_GLM, tt) -> table_teste
+table_teste$Fit <- modelo_glm$fitted.values
 
 #### GERANDO BANCO DE IMAGENS #####
 #funcaozinha para indexar a img temporária na tabela
-temp_dcm_export <- function(arg1, arg2, arg3){dcmj2pnm(arg1, opt = arg2, outfile = arg3)}
+temp_dcm_export <- function(arg1, arg2, arg3){dcmj2pnm(arg1, opt = arg2, outfile = arg3, "--use-window 1")}
+
+
 
 #PRONTO! SÓ GERAR!
 #gerando para saber qual serie
 
 bomba %>% group_by(FilePath) %>% 
-  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", 
-                                     make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."), 
-                                                unique = TRUE))) -> bomba_com_img
+    mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) -> bomba_com_img
 
 
-list.files("~/Desktop/IMAGENS_KERAS/") %>%  as_tibble() -> vesic
-separate(vesic, col = value, sep = "_", into = c("NUM","fileName")) -> vesic
-vesic %>% select(fileName) %>% left_join(bomba_com_img)
 
-bomba_com_img %>% semi_join(vesic, by="fileName")                                                       
+list.files("~/Desktop/IMAGENS_KERAS/VESICULA/") %>%  as_tibble() -> vesic
+separate(vesic, col = value, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) -> vesic
+vesic$InstanceNumber %>% str_sub(end=-5) -> vesic$InstanceNumber
+
+vesic 
+
+bomba %>% mutate(id = str_sub(FilePath, start = 35L, end = -5L)) %>% 
+  separate(col = id, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) %>% right_join(vesic) -> tabela_imgs_vesicula
+tabela_imgs_vesicula
+
+path2 = '/home/luiz/Desktop/IMAGENS_KERAS/jpg2000/'
+for (i in tabela_imgs_vesicula$FilePath) { file.copy(from = i, to = '~/Desktop/IMAGENS_KERAS/jpg2000/') }
+list.files("~/Desktop/IMAGENS_KERAS/jpg2000/") %>%  as_tibble() -> imgs
+imgs$FilePath <- paste(path2, imgs$value, sep='')
+
+imgs %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 42L, end = -5L), "png", sep = "."),unique = TRUE))) -> imgs_com_path
+
+
+
+

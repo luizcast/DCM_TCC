@@ -34,6 +34,9 @@ validation_generator <- flow_images_from_directory(directory = path,
                            batch_size = BATH_SIZE,
                            subset="validation")
 
+
+
+# BATH 80TREINO / 10TESTE / 10VALIDACAO
 #### Construçao do modelo ####
 
 keras_model_sequential() %>% 
@@ -56,7 +59,7 @@ keras_model_sequential() %>%
   layer_dense(units = 64, activation = 'relu') -> keras_modelo
 
 summary(keras_modelo)
-  
+
 
 #### Compilação: Como a rede irá arender #####
 
