@@ -35,8 +35,9 @@ validation_generator <- flow_images_from_directory(directory = path,
                            subset="validation")
 
 
-
 # BATH 80TREINO / 10TESTE / 10VALIDACAO
+
+
 #### Construçao do modelo ####
 
 keras_model_sequential() %>% 
@@ -69,4 +70,5 @@ keras_modelo %>% compile(loss = 'binary_crossentroy',
 
 
 keras::fit_generator(callbacks = )
+    tensorflow::tf_gpu_configured()
     

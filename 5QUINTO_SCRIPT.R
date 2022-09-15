@@ -103,7 +103,6 @@ index_dicom %>% group_by(PatientID) %>%
 glimpse(index_dicom)
 
 
-
 #### GERANDO TABELAS #####
 index_dicom %>% dplyr::select(1:9) -> base_tratada
 base_tratada %>% dplyr::select(-5) -> base_tratada
@@ -165,29 +164,36 @@ tabela_GLM %>% left_join(tabela_n_por_serie) -> tabela_GLM
 tabela_GLM %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
                                       InstanceNumber <= `Corte FINAL vesícula`), 1,0)) %>% select(-5,-6) -> tabela_GLM
 
+
+sum(is.na(tabela_GLM$n))
+tabela_GLM %>% filter(is.na(n)) -> naSolving
+tabela_GLM %>% filter(!is.na(n)) -> Solving
+
+naSolving %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> table_NAS
+names(table_NAS) <- c('PatientID','SerieNumber', 'total')
+glimpse(table_NAS)
+naSolving %>% left_join(table_NAS) %>% select(-5) -> NA_REMOVED
+names(NA_REMOVED) <- c('FileName','PatientID','SerieNumber','InstanceNumber','posicao_interesse','n')
+bind_rows(Solving,NA_REMOVED) -> tabela_GLM
+
+#modelo
 glm(posicao_interesse~InstanceNumber+n, family = binomial, data = tabela_GLM) -> modelo_glm
 summary(modelo_glm)
 step(modelo_glm) -> step_modelo
 summary(step_modelo)
-# ^-- checar os NAs #
+tabela_GLM$fit <- step_modelo$fitted.values
+tabela_GLM
 
-
-tabela_GLM %>% filter(str_length(FileName) >= 22) -> tt
-anti_join(tabela_GLM, tt) -> table_teste
-table_teste$Fit <- modelo_glm$fitted.values
 
 #### GERANDO BANCO DE IMAGENS #####
 #funcaozinha para indexar a img temporária na tabela
 temp_dcm_export <- function(arg1, arg2, arg3){dcmj2pnm(arg1, opt = arg2, outfile = arg3, "--use-window 1")}
 
-
-
 #PRONTO! SÓ GERAR!
+
 #gerando para saber qual serie
-
 bomba %>% group_by(FilePath) %>% 
-    mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) -> bomba_com_img
-
+    mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> bomba_com_img
 
 
 list.files("~/Desktop/IMAGENS_KERAS/VESICULA/") %>%  as_tibble() -> vesic
@@ -207,7 +213,5 @@ imgs$FilePath <- paste(path2, imgs$value, sep='')
 
 imgs %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 42L, end = -5L), "png", sep = "."),unique = TRUE))) -> imgs_com_path
-
-
 
 
