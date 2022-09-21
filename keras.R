@@ -1,5 +1,5 @@
 ####keras
-pacotes <- c("keras", "tensorflow", "tidyverse")
+pacotes <- c("keras", "tensorflow", "tidyverse", "recogito", "shiny")
 
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
@@ -11,17 +11,17 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   sapply(pacotes, require, character = T) 
 }
 
-path = "~/Desktop/IMAGENS_KERAS/"
+path = "~/Desktop/USP/TCC/projeto_TCC/IMGs/"
 BATH_SIZE = 50
 
-image_dataset_from_directory('~/Desktop/DATA-SET_TESTE/') -> sera
+image_dataset_from_directory('~/Desktop/USP/TCC/projeto_TCC/IMGs/') -> data_from_directory
 
 data_generator <- keras::image_data_generator(rescale = 1./255, validation_split = 0.30)
 
-train_generator <- flow_images_from(directory = path, 
+train_generator <- flow_images_from_directory(directory = path, 
                            generator = data_generator, 
                            shuffle = TRUE, 
-                           seed = 100, 
+                           seed = 1986, 
                            class_mode = 'categorical',
                            batch_size = BATH_SIZE,
                            subset = "training")
@@ -29,7 +29,7 @@ train_generator <- flow_images_from(directory = path,
 validation_generator <- flow_images_from_directory(directory = path,
                            generator = data_generator,
                            shuffle = TRUE,
-                           seed = 100,
+                           seed = 1986,
                            class_mode = 'categorical',
                            batch_size = BATH_SIZE,
                            subset="validation")
@@ -64,11 +64,33 @@ summary(keras_modelo)
 
 #### Compilação: Como a rede irá arender #####
 
-keras_modelo %>% compile(loss = 'binary_crossentroy',
+compile()
+
+compile(keras_modelo, loss = 'binary_crossentroy',
                          optimizer = 'adam',
-                         metrics = 'accuracy')
+                         metrics = 'accuracy', run_eagerly = TRUE)
 
+checkpoint <- keras::callback_model_checkpoint(path, 
+                                               monitor = 'val_loss',
+                                               verbose=1,
+                                               mode='min',
+                                               save_best_only = TRUE,
+                                               save_weights_only = TRUE)
+  
+early_stop <- keras::callback_early_stopping(monitor = 'val_loss',
+                                             min_delta = 0.001,
+                                             patience=5,
+                                             mode='min',
+                                             verbose = 1)
 
-keras::fit_generator(callbacks = )
-    tensorflow::tf_gpu_configured()
+cb <- list(checkpoint,early_stop)
     
+fit_generator(keras_modelo, generator = train_generator,
+              steps_per_epoch = train_generator$samples / BATH_SIZE,
+              validation_data = validation_generator,
+              validation_steps = validation_generator$samples / BATH_SIZE,
+              epochs = 50,
+              callbacks = cb)
+
+
+

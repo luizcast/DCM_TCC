@@ -177,24 +177,44 @@ names(NA_REMOVED) <- c('FileName','PatientID','SerieNumber','InstanceNumber','po
 bind_rows(Solving,NA_REMOVED) -> tabela_GLM
 
 #modelo
-glm(posicao_interesse~InstanceNumber+n, family = binomial, data = tabela_GLM) -> modelo_glm
+glm(posicao_interesse~InstanceNumber+n+SerieNumber, family = binomial, data = tabela_GLM) -> modelo_glm
 summary(modelo_glm)
-step(modelo_glm) -> step_modelo
-summary(step_modelo)
-tabela_GLM$fit <- step_modelo$fitted.values
-tabela_GLM
+step(modelo_glm) -> modelo_fit
+summary(modelo_fit)
+tabela_GLM$fit <- modelo_fit$fitted.values
+tabela_GLM %>% filter(tabela_GLM$posicao_interesse == 1) %>% summary()
+tabela_GLM$PatientID <- as.factor(tabela_GLM$PatientID)
+
+
+#aplicando a tabela CLIPE
+
+summary(modelo_fit)
+predict(object = modelo_fit, 
+        data.frame(base_clipe), 
+        type = "response") -> base_clipe$fit
+tabela_GLM$fit %>% summary()
+ggplot(tabela_GLM, aes(fit)) + geom_histogram(bins = 10)
+base_clipe$fit %>% summary()
+ggplot(base_clipe, aes(fit)) + geom_histogram(bins = 20)
+base_clipe %>% filter(fit >= 0.025 & fit <= 0.21)
+#achando a média
+c(as.integer(mean(base_vesicula_normal$`Corte INICIAL vesícula`)))-3 -> ENTRADA
+c(as.integer(mean(base_frames_vesicula_normal$`Corte FINAL vesícula`)))+4 -> SAIDA
+base_clipe %>% filter(fit >= 0.025 & fit <= 0.21) %>% filter(InstanceNumber >= ENTRADA & InstanceNumber <= SAIDA) -> clipe_select
 
 
 #### GERANDO BANCO DE IMAGENS #####
 #funcaozinha para indexar a img temporária na tabela
 temp_dcm_export <- function(arg1, arg2, arg3){dcmj2pnm(arg1, opt = arg2, outfile = arg3, "--use-window 1")}
 
+
 #PRONTO! SÓ GERAR!
 
 #gerando para saber qual serie
 bomba %>% group_by(FilePath) %>% 
     mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> bomba_com_img
-
+clipe_select %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> clipe_select_outs
 
 list.files("~/Desktop/IMAGENS_KERAS/VESICULA/") %>%  as_tibble() -> vesic
 separate(vesic, col = value, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) -> vesic
