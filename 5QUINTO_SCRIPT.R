@@ -232,3 +232,18 @@ imgs %>% group_by(FilePath) %>%
 
 base_vesicula_normal %>% filter(PatientID == 3870806 & SerieNumber == 2) %>% filter(InstanceNumber >= 50 & InstanceNumber <= 75) %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> prova_imgs_out
+
+
+base_vesicula_hipodistendida %>% 
+  mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 2)) %>% 
+  filter(posicao_interesse == 1) -> base_frames_vesicula_hipodistendida
+base_frames_vesicula_hipodistendida %>% group_by(PatientID) %>%  
+  mutate(MEDIA = c(`Corte INICIAL vesícula`+`Corte FINAL vesícula`)/2) %>% 
+  filter(InstanceNumber == MEDIA) %>% ungroup() -> imgs_hipo
+
+imgs_hipo %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> imgs_out_hipo
+
+base_frames_vesicula_hipodistendida %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> hipo
+glimpse(base_frames_vesicula_hipodistendida)

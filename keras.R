@@ -149,3 +149,5 @@ lista_imgs %>% dplyr::filter(path == "png")
 path = '~/yolov7/DICOM_VESICULA/'
 image_dataset_from_directory('~/yolov7/DICOM_VESICULA/')
 
+
+library()
