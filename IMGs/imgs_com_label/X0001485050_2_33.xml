@@ -1,0 +1,26 @@
+<annotation>
+	<folder>vesicula</folder>
+	<filename>X0001485050_2_33.png</filename>
+	<path>/home/bomb/Desktop/TCC_IMGS_ANNOT/vesicula/X0001485050_2_33.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>512</width>
+		<height>512</height>
+		<depth>1</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>vesicula</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>147</xmin>
+			<ymin>220</ymin>
+			<xmax>196</xmax>
+			<ymax>268</ymax>
+		</bndbox>
+	</object>
+</annotation>

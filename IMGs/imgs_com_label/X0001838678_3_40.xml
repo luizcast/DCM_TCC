@@ -1,0 +1,26 @@
+<annotation>
+	<folder>CLIPE</folder>
+	<filename>X0001838678_3_40.png</filename>
+	<path>/home/bomb/Desktop/TCC_IMGS_ANNOT/CLIPE/X0001838678_3_40.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>512</width>
+		<height>512</height>
+		<depth>1</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>clipe</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>171</xmin>
+			<ymin>190</ymin>
+			<xmax>183</xmax>
+			<ymax>204</ymax>
+		</bndbox>
+	</object>
+</annotation>

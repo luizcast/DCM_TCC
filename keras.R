@@ -1,5 +1,5 @@
 ####keras
-pacotes <- c("keras", "tensorflow", "tidyverse", "recogito", "shiny")
+pacotes <- c("keras", "tensorflow", "tidyverse", "recogito", "shiny", "imager")
 
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
@@ -129,7 +129,7 @@ keras::compile(modelo_2, loss = 'binary_crossentropy',
                optimizer = 'adam',
                metrics = 'accuracy', run_eagerly = TRUE)
 
-
+serialize_model(modelo_2, include_optimizer = TRUE)
 
 fit_generator(modelo_2, generator = train_generator,
               steps_per_epoch = train_generator$samples / BATH_SIZE,
@@ -137,4 +137,15 @@ fit_generator(modelo_2, generator = train_generator,
               validation_steps = validation_generator$samples / BATH_SIZE,
               epochs = 50,
               callbacks = cb)
+
+
+
+sample.split()
+list.files(path) %>%  as_tibble() -> lista_imgs
+lista_imgs$path <- paste(file.path(path),lista_imgs$value, sep = '')
+lista_imgs
+lista_imgs %>% dplyr::filter(path == "png")
+
+path = '~/yolov7/DICOM_VESICULA/'
+image_dataset_from_directory('~/yolov7/DICOM_VESICULA/')
 

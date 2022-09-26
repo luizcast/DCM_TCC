@@ -51,7 +51,7 @@ annot_clean[170:180,]
 glimpse(annot_clean)
 
 table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
-
+annot_clean
 ###### (observacao) Uma funçao para enteragir com a arquivo DICOM carregado na memória #####
 #desta forma é impossível trabalhar com grandes volumes de arquivos. Porém, segmentando
 #a imagem em blocos menores do que 14Gb é possivel manipula-las.
@@ -116,7 +116,7 @@ table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 
 base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)-> frequencia_por_serie
 frequencia_por_serie
-table(frequencia_por_serie$n)
+
 #TABELA SEM VESICULA COM CLIPE : full_clipe
 base_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C")
 glimpse(base_clipe)
@@ -136,11 +136,10 @@ base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_ve
 glimpse(base_frames_vesicula_normal)
 #write_csv(frames_vesicula_normal, "frames_vesicula.csv")
 
-
-#QUAL SERA A SERIE?
+#QUAL SERA A SERIE? CORRESPONDENTE A IMAGEM ANOTADA?#
 base_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> tabela_n_por_serie
-tabela_para_descobrir_serie %>% count(PatientID)
-tabela_para_descobrir_serie
+tabela_n_por_serie
+tabela_n_por_serie %>% count(PatientID)
 
 #RETIRANDO DA TABELA A "IMAGENS NO MEIO" DE CASA SERIE
 base_frames_vesicula_normal %>% unite("ID_SERIE", PatientID:SerieNumber) -> ID_SERIE
@@ -226,12 +225,10 @@ bomba %>% mutate(id = str_sub(FilePath, start = 35L, end = -5L)) %>%
   separate(col = id, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) %>% right_join(vesic) -> tabela_imgs_vesicula
 tabela_imgs_vesicula
 
-path2 = '/home/luiz/Desktop/IMAGENS_KERAS/jpg2000/'
-for (i in tabela_imgs_vesicula$FilePath) { file.copy(from = i, to = '~/Desktop/IMAGENS_KERAS/jpg2000/') }
-list.files("~/Desktop/IMAGENS_KERAS/jpg2000/") %>%  as_tibble() -> imgs
-imgs$FilePath <- paste(path2, imgs$value, sep='')
 
 imgs %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 42L, end = -5L), "png", sep = "."),unique = TRUE))) -> imgs_com_path
 
 
+base_vesicula_normal %>% filter(PatientID == 3870806 & SerieNumber == 2) %>% filter(InstanceNumber >= 50 & InstanceNumber <= 75) %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> prova_imgs_out
