@@ -1,0 +1,316 @@
+group,element,name,code,length,value,sequence
+0002,0000,GroupLength,UL,4,200,
+0002,0001,FileMetaInformationVersion,OB,2,,
+0002,0002,MediaStorageSOPClassUID,UI,26,1.2.840.10008.5.1.4.1.1.2,
+0002,0003,MediaStorageSOPInstanceUID,UI,42,1.2.840.113704.1.111.5464.1391825219.35564,
+0002,0010,TransferSyntaxUID,UI,20,1.2.840.10008.1.2.1,
+0002,0012,ImplementationClassUID,UI,28,1.2.276.0.7230010.3.0.3.6.4,
+0002,0013,ImplementationVersionName,SH,16,OFFIS_DCMTK_364,
+0002,0016,SourceApplicationEntityTitle,AE,6,B64_2,
+0008,0005,SpecificCharacterSet,CS,10,ISO_IR 100,
+0008,0008,ImageType,CS,28,ORIGINAL PRIMARY AXIAL HELIX,
+0008,0012,InstanceCreationDate,DA,8,20140208,
+0008,0013,InstanceCreationTime,TM,6,000659,
+0008,0016,SOPClassUID,UI,26,1.2.840.10008.5.1.4.1.1.2,
+0008,0018,SOPInstanceUID,UI,42,1.2.840.113704.1.111.5464.1391825219.35564,
+0008,0020,StudyDate,DA,8,20140208,
+0008,0022,AcquisitionDate,DA,8,20140208,
+0008,0023,ContentDate,DA,8,20140208,
+0008,002A,AcquisitionDatetime,DT,20,20140208000620-0200,
+0008,0030,StudyTime,TM,6,000021,
+0008,0032,AcquisitionTime,TM,6,000620,
+0008,0033,ContentTime,TM,14,000620.749001,
+0008,0050,AccessionNumber,SH,10,0004463374,
+0008,0060,Modality,CS,2,CT,
+0008,0070,Manufacturer,LO,8,Philips,
+0008,0080,InstitutionName,LO,16,HSP EPM UNIFESP,
+0008,0081,InstitutionAddress,ST,10,Sao Paulo,
+0008,0090,ReferringPhysiciansName,PN,10,SF TX ABD,
+0008,1010,StationName,SH,10,HOST-10305,
+0008,1030,StudyDescription,LO,22,TC S.FACE+TORAX+ABDOME,
+0008,103E,SeriesDescription,LO,6,PORTAL,
+0008,1040,InstitutionalDepartmentName,LO,10,Tomografia,
+0008,1070,OperatorsName,PN,2,SL,
+0008,1090,ManufacturersModelName,LO,14,Brilliance 64,
+0008,1110,ReferencedStudySequence,SQ,24,Sequence,
+FFFE,E000,Item,UN,0,," (0008,1110)"
+0008,1150,ReferencedSOPClassUID,UI,0,," (0008,1110)"
+0008,1155,ReferencedSOPInstanceUID,UI,0,," (0008,1110)"
+0008,1111,ReferencedPerformedProcedureStepSequence,SQ,88,Sequence,
+FFFE,E000,Item,UN,0,," (0008,1111)"
+0008,1150,ReferencedSOPClassUID,UI,24,1.2.840.10008.3.1.2.3.3," (0008,1111)"
+0008,1155,ReferencedSOPInstanceUID,UI,40,1.2.840.113704.1.111.9356.1391824790.89," (0008,1111)"
+0008,1120,ReferencedPatientSequence,SQ,24,Sequence,
+FFFE,E000,Item,UN,0,," (0008,1120)"
+0008,1150,ReferencedSOPClassUID,UI,0,," (0008,1120)"
+0008,1155,ReferencedSOPInstanceUID,UI,0,," (0008,1120)"
+0008,1140,ReferencedImageSequence,SQ,92,Sequence,
+FFFE,E000,Item,UN,0,," (0008,1140)"
+0008,1150,ReferencedSOPClassUID,UI,26,1.2.840.10008.5.1.4.1.1.2," (0008,1140)"
+0008,1155,ReferencedSOPInstanceUID,UI,42,1.2.840.113704.1.111.5464.1391824895.33989," (0008,1140)"
+0010,0010,PatientsName,PN,24,DEBORA LOURENCO DE LIMA,
+0010,0020,PatientID,LO,10,0003128993,
+0010,0030,PatientsBirthDate,DA,8,19820921,
+0010,0040,PatientsSex,CS,2,F,
+0010,1000,OtherPatientIDs,LO,0,,
+0010,1010,PatientsAge,AS,4,031Y,
+0010,1030,PatientsWeight,DS,0,,
+0010,2000,MedicalAlerts,LO,0,,
+0010,2110,ContrastAllergies,LO,0,,
+0010,2160,EthnicGroup,SH,0,,
+0010,21B0,AdditionalPatientHistory,LT,0,,
+0010,21C0,PregnancyStatus,US,0,,0010
+0010,4000,PatientComments,LT,0,,
+0018,0010,ContrastBolusAgent,LO,8,CONTRAST,
+0018,0022,ScanOptions,CS,6,HELIX,
+0018,0050,SliceThickness,DS,4,3.00,
+0018,0060,kVp,DS,4,120,
+0018,0088,SpacingBetweenSlices,DS,4,3.0,
+0018,0090,DataCollectionDiameter,DS,4,500,
+0018,1020,SoftwareVersions,LO,6,2.6.2,
+0018,1030,ProtocolName,LO,32,PROTOCOLO 3 HIPOVASCULAR Abdomen,
+0018,1040,ContrastBolusRoute,LO,0,,
+0018,1041,ContrastBolusVolume,DS,0,,
+0018,1046,ContrastFlowRate,DS,0,,
+0018,1049,ContrastBolusIngredientConcentration,DS,0,,
+0018,1100,ReconstructionDiameter,DS,4,371,
+0018,1120,GantryDetectorTilt,DS,2,0,
+0018,1130,TableHeight,DS,10,126.000000,
+0018,1140,RotationDirection,CS,2,CW,
+0018,1150,ExposureTime,IS,4,842,
+0018,1151,XrayTubeCurrent,IS,4,136,
+0018,1152,Exposure,IS,4,114,
+0018,1160,FilterType,SH,2,B,
+0018,1210,ConvolutionKernel,SH,2,B,
+0018,5100,PatientPosition,CS,4,FFS,
+0018,9321,CTExposureSequence,SQ,104,Sequence,
+FFFE,E000,Item,UN,0,," (0018,9321)"
+0018,9323,ExposureModulationType,CS,8,ZDOM_ACS," (0018,9321)"
+0018,9324,EstimatedDoseSaving,FD,8,69," (0018,9321)"
+0018,9328,ExposureTimeInms,FD,8,0.838235294117647," (0018,9321)"
+0018,9330,XrayTubeCurrentInmA,FD,8,437," (0018,9321)"
+0018,9332,ExposureInmAs,FD,8,114," (0018,9321)"
+0018,9345,CTDIvol,FD,8,7.37282608695652," (0018,9321)"
+0018,9323,ExposureModulationType,CS,8,ZDOM_ACS,
+0018,9324,EstimatedDoseSaving,FD,8,69,
+0018,9345,CTDIvol,FD,8,7.37282608695652,
+0020,000D,StudyInstanceUID,UI,38,1.2.840.113704.1.111.2144.1391824821.1,
+0020,000E,SeriesInstanceUID,UI,40,1.2.840.113704.1.111.2144.1391825167.29,
+0020,0010,StudyID,SH,6,28272,
+0020,0011,SeriesNumber,IS,2,7,
+0020,0012,AcquisitionNumber,IS,0,,
+0020,0013,InstanceNumber,IS,2,1,
+0020,0032,ImagePositionPatient,DS,24,-190.5 -56.5 -246.999985,
+0020,0037,ImageOrientationPatient,DS,12,1 0 0 0 1 0,
+0020,0052,FrameOfReferenceUID,UI,38,1.2.840.113704.1.111.2144.1391824852.4,
+0020,0060,Laterality,CS,0,,
+0020,1040,PositionReferenceIndicator,LO,0,,
+0020,1041,SliceLocation,DS,6,247.00,
+0020,4000,ImageComments,LT,6,PORTAL,
+0028,0002,SamplesperPixel,US,2,1,
+0028,0004,PhotometricInterpretation,CS,12,MONOCHROME2,
+0028,0010,Rows,US,2,512,
+0028,0011,Columns,US,2,512,
+0028,0030,PixelSpacing,DS,24,0.724609375 0.724609375,
+0028,0100,BitsAllocated,US,2,16,
+0028,0101,BitsStored,US,2,12,
+0028,0102,HighBit,US,2,11,
+0028,0103,PixelRepresentation,US,2,0,
+0028,1050,WindowCenter,DS,12,00060 00060,
+0028,1051,WindowWidth,DS,12,00350 00350,
+0028,1052,RescaleIntercept,DS,6,-1024,
+0028,1053,RescaleSlope,DS,2,1,
+0032,1033,RequestingService,LO,0,,
+0032,1060,RequestedProcedureDescription,LO,10,TC ABDOME,
+0038,0010,AdmissionID,LO,0,,
+0038,0050,SpecialNeeds,LO,0,,
+0038,0500,PatientState,LO,0,,
+0040,0253,PerformedProcedureStepID,SH,8,28272144,
+0040,0275,RequestAttributesSequence,SQ,114,Sequence,
+FFFE,E000,Item,UN,0,," (0040,0275)"
+0040,0007,ScheduledProcedureStepDescription,LO,10,TC ABDOME," (0040,0275)"
+0040,0008,ScheduledProtocolCodeSequence,SQ,52,Sequence," (0040,0275)"
+FFFE,E000,Item,UN,0,," (0040,0275) (0040,0008)"
+0008,0100,CodeValue,SH,4,0028," (0040,0275) (0040,0008)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (0040,0275) (0040,0008)"
+0008,0104,CodeMeaning,LO,10,TC ABDOME," (0040,0275) (0040,0008)"
+0040,0009,ScheduledProcedureStepID,SH,4,0028," (0040,0275)"
+0040,1001,RequestedProcedureID,SH,4,0028," (0040,0275)"
+0040,3001,ConfidentialityConstraintOnPatientDataDescription,LO,0,,
+00E1,0010,Unknown,UN,8,ELSCINT1,
+00E1,1001,Unknown,UN,2,1,
+00E1,1022,Unknown,UN,12,00000 00000,
+00E1,1023,Unknown,UN,12,00001 00001,
+00E1,1039,Unknown,UN,1640,Sequence,
+FFFE,E000,Item,UN,0,," (00E1,1039)"
+0008,0005,SpecificCharacterSet,CS,10,ISO_IR 100," (00E1,1039)"
+0008,0050,AccessionNumber,SH,10,0004463375," (00E1,1039)"
+0008,0090,ReferringPhysiciansName,PN,16,UNKNOWN UNKNOWN," (00E1,1039)"
+0008,1030,StudyDescription,LO,16,TC SEIOS DA FACE," (00E1,1039)"
+0008,1032,ProcedureCodeSequence,SQ,58,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1032)"
+0008,0100,CodeValue,SH,4,2561," (00E1,1039) (0008,1032)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0008,1032)"
+0008,0104,CodeMeaning,LO,16,TC SEIOS DA FACE," (00E1,1039) (0008,1032)"
+0008,1110,ReferencedStudySequence,SQ,24,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1110)"
+0008,1150,ReferencedSOPClassUID,UI,0,," (00E1,1039) (0008,1110)"
+0008,1155,ReferencedSOPInstanceUID,UI,0,," (00E1,1039) (0008,1110)"
+0008,1111,ReferencedPerformedProcedureStepSequence,SQ,88,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1111)"
+0008,1150,ReferencedSOPClassUID,UI,24,1.2.840.10008.3.1.2.3.3," (00E1,1039) (0008,1111)"
+0008,1155,ReferencedSOPInstanceUID,UI,40,1.2.840.113704.1.111.9356.1391824790.86," (00E1,1039) (0008,1111)"
+0008,1140,ReferencedImageSequence,SQ,88,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1140)"
+0008,1150,ReferencedSOPClassUID,UI,26,1.2.840.10008.5.1.4.1.1.2," (00E1,1039) (0008,1140)"
+0008,1155,ReferencedSOPInstanceUID,UI,38,1.2.840.113704.1.111.2144.1391824895.8," (00E1,1039) (0008,1140)"
+0020,000D,StudyInstanceUID,UI,40,1.2.840.113704.1.111.9356.1391824790.85," (00E1,1039)"
+0020,0010,StudyID,SH,6,282720," (00E1,1039)"
+0032,1032,RequestingPhysician,PN,0,," (00E1,1039)"
+0032,1060,RequestedProcedureDescription,LO,16,TC SEIOS DA FACE," (00E1,1039)"
+0032,1064,RequestedProcedureCodeSequence,SQ,58,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0032,1064)"
+0008,0100,CodeValue,SH,4,2561," (00E1,1039) (0032,1064)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0032,1064)"
+0008,0104,CodeMeaning,LO,16,TC SEIOS DA FACE," (00E1,1039) (0032,1064)"
+0040,0253,PerformedProcedureStepID,SH,4,2561," (00E1,1039)"
+0040,0254,PerformedProcedureStepDescription,LO,16,TC SEIOS DA FACE," (00E1,1039)"
+0040,0260,PerformedProtocolCodeSequence,SQ,58,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0040,0260)"
+0008,0100,CodeValue,SH,4,2561," (00E1,1039) (0040,0260)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0040,0260)"
+0008,0104,CodeMeaning,LO,16,TC SEIOS DA FACE," (00E1,1039) (0040,0260)"
+0040,0275,RequestAttributesSequence,SQ,126,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0040,0275)"
+0040,0007,ScheduledProcedureStepDescription,LO,16,TC SEIOS DA FACE," (00E1,1039) (0040,0275)"
+0040,0008,ScheduledProtocolCodeSequence,SQ,58,Sequence," (00E1,1039) (0040,0275)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0040,0275) (0040,0008)"
+0008,0100,CodeValue,SH,4,2561," (00E1,1039) (0040,0275) (0040,0008)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0040,0275) (0040,0008)"
+0008,0104,CodeMeaning,LO,16,TC SEIOS DA FACE," (00E1,1039) (0040,0275) (0040,0008)"
+0040,0009,ScheduledProcedureStepID,SH,4,2561," (00E1,1039) (0040,0275)"
+0040,1001,RequestedProcedureID,SH,4,2561," (00E1,1039) (0040,0275)"
+00E1,0010,Unknown,UN,8,ELSCINT1," (00E1,1039)"
+00E1,103A,Unknown,UN,2,1," (00E1,1039)"
+00E1,103B,Unknown,UN,2,0," (00E1,1039)"
+00E1,103E,Unknown,UN,2,0," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039)"
+0008,0005,SpecificCharacterSet,CS,10,ISO_IR 100," (00E1,1039)"
+0008,0050,AccessionNumber,SH,10,0004463376," (00E1,1039)"
+0008,0090,ReferringPhysiciansName,PN,16,UNKNOWN UNKNOWN," (00E1,1039)"
+0008,1030,StudyDescription,LO,8,TC TORAX," (00E1,1039)"
+0008,1032,ProcedureCodeSequence,SQ,50,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1032)"
+0008,0100,CodeValue,SH,4,0054," (00E1,1039) (0008,1032)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0008,1032)"
+0008,0104,CodeMeaning,LO,8,TC TORAX," (00E1,1039) (0008,1032)"
+0008,1110,ReferencedStudySequence,SQ,24,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1110)"
+0008,1150,ReferencedSOPClassUID,UI,0,," (00E1,1039) (0008,1110)"
+0008,1155,ReferencedSOPInstanceUID,UI,0,," (00E1,1039) (0008,1110)"
+0008,1111,ReferencedPerformedProcedureStepSequence,SQ,88,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1111)"
+0008,1150,ReferencedSOPClassUID,UI,24,1.2.840.10008.3.1.2.3.3," (00E1,1039) (0008,1111)"
+0008,1155,ReferencedSOPInstanceUID,UI,40,1.2.840.113704.1.111.9356.1391824790.88," (00E1,1039) (0008,1111)"
+0008,1140,ReferencedImageSequence,SQ,88,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0008,1140)"
+0008,1150,ReferencedSOPClassUID,UI,26,1.2.840.10008.5.1.4.1.1.2," (00E1,1039) (0008,1140)"
+0008,1155,ReferencedSOPInstanceUID,UI,38,1.2.840.113704.1.111.2144.1391824895.9," (00E1,1039) (0008,1140)"
+0020,000D,StudyInstanceUID,UI,40,1.2.840.113704.1.111.9356.1391824790.87," (00E1,1039)"
+0020,0010,StudyID,SH,6,282721," (00E1,1039)"
+0032,1032,RequestingPhysician,PN,0,," (00E1,1039)"
+0032,1060,RequestedProcedureDescription,LO,8,TC TORAX," (00E1,1039)"
+0032,1064,RequestedProcedureCodeSequence,SQ,50,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0032,1064)"
+0008,0100,CodeValue,SH,4,0054," (00E1,1039) (0032,1064)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0032,1064)"
+0008,0104,CodeMeaning,LO,8,TC TORAX," (00E1,1039) (0032,1064)"
+0040,0253,PerformedProcedureStepID,SH,4,0054," (00E1,1039)"
+0040,0254,PerformedProcedureStepDescription,LO,8,TC TORAX," (00E1,1039)"
+0040,0260,PerformedProtocolCodeSequence,SQ,50,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0040,0260)"
+0008,0100,CodeValue,SH,4,0054," (00E1,1039) (0040,0260)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0040,0260)"
+0008,0104,CodeMeaning,LO,8,TC TORAX," (00E1,1039) (0040,0260)"
+0040,0275,RequestAttributesSequence,SQ,110,Sequence," (00E1,1039)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0040,0275)"
+0040,0007,ScheduledProcedureStepDescription,LO,8,TC TORAX," (00E1,1039) (0040,0275)"
+0040,0008,ScheduledProtocolCodeSequence,SQ,50,Sequence," (00E1,1039) (0040,0275)"
+FFFE,E000,Item,UN,0,," (00E1,1039) (0040,0275) (0040,0008)"
+0008,0100,CodeValue,SH,4,0054," (00E1,1039) (0040,0275) (0040,0008)"
+0008,0102,CodingSchemeDesignator,SH,6,SYN99," (00E1,1039) (0040,0275) (0040,0008)"
+0008,0104,CodeMeaning,LO,8,TC TORAX," (00E1,1039) (0040,0275) (0040,0008)"
+0040,0009,ScheduledProcedureStepID,SH,4,0054," (00E1,1039) (0040,0275)"
+0040,1001,RequestedProcedureID,SH,4,0054," (00E1,1039) (0040,0275)"
+00E1,0010,Unknown,UN,8,ELSCINT1," (00E1,1039)"
+00E1,103A,Unknown,UN,2,2," (00E1,1039)"
+00E1,103B,Unknown,UN,2,0," (00E1,1039)"
+00E1,103E,Unknown,UN,2,0," (00E1,1039)"
+00E1,1040,Unknown,UN,6,PORTAL,
+00E1,1042,Unknown,UN,0,,
+00E1,1050,Unknown,UN,6,15.954,
+00E1,1061,Unknown,UN,28,Abdomen_Multi_1142_usr.proc,
+00E1,1063,Unknown,UN,10,PORTUGUES,
+01E1,0010,Unknown,UN,8,ELSCINT1,
+01E1,1041,Unknown,UN,128,NA,
+01F1,0010,Unknown,UN,8,ELSCINT1,
+01F1,1001,Unknown,UN,6,SPIRAL,
+01F1,1002,Unknown,UN,8,STANDARD,
+01F1,1003,Unknown,UN,6,FUSED,
+01F1,1004,Unknown,UN,6,NORMAL,
+01F1,1005,Unknown,UN,4,180,
+01F1,1007,Unknown,UN,6,47.50,
+01F1,1008,Unknown,UN,4,690,
+01F1,100A,Unknown,UN,2,0,
+01F1,100C,Unknown,UN,16,0 -0.0134770889,
+01F1,100D,Unknown,UN,2,0,
+01F1,100E,Unknown,UN,4,0,
+01F1,1026,Unknown,UN,6,0.891,
+01F1,1027,Unknown,UN,4,0.75,
+01F1,1032,Unknown,UN,14,RIGHT_ON_LEFT,
+01F1,1042,Unknown,UN,2,No,
+01F1,1043,Unknown,UN,0,,
+01F1,1044,Unknown,UN,644,NA,
+01F1,1046,Unknown,UN,4,0.625,
+01F1,1047,Unknown,UN,2,3D,
+01F1,1049,Unknown,UN,4,368,
+01F1,104A,Unknown,UN,4,DOM,
+01F1,104B,Unknown,UN,8,64x0.625,
+01F1,104C,Unknown,UN,2,NO,
+01F1,104D,Unknown,UN,4,YES,
+01F1,104E,Unknown,UN,16,Abdomen Routine,
+01F7,0010,Unknown,UN,8,ELSCINT1,
+01F7,1010,Unknown,UN,0,NA,
+01F7,1011,Unknown,UN,552,NA,
+01F7,1013,Unknown,UN,136,NA,
+01F7,1014,Unknown,UN,108,NA,
+01F7,1015,Unknown,UN,188,NA,
+01F7,1016,Unknown,UN,40,NA,
+01F7,1017,Unknown,UN,8,,
+01F7,1018,Unknown,UN,228,NA,
+01F7,1019,Unknown,UN,2160,NA,
+01F7,101A,Unknown,UN,28,NA,
+01F7,101B,Unknown,UN,1744,NA,
+01F7,101C,Unknown,UN,116,NA,
+01F7,101E,Unknown,UN,364,,
+01F7,101F,Unknown,UN,148,NA,
+01F7,1022,Unknown,UN,60,1.2.840.113704.1.111.2144.1391825167.28.1111.111111111111111,
+01F7,1023,Unknown,UN,4,$,
+01F7,1025,Unknown,UN,12,NA,
+01F7,1027,Unknown,UN,36,NA,
+01F7,1029,Unknown,UN,440,NA,
+01F7,102B,Unknown,UN,36,NA,
+01F7,102C,Unknown,UN,656,NA,
+01F7,102D,Unknown,UN,8,,
+01F7,1030,Unknown,UN,16,,
+01F7,1031,Unknown,UN,124,NA,
+01F7,1070,Unknown,UN,1312,NA,
+01F7,1074,Unknown,UN,288,NA,
+01F7,1075,Unknown,UN,520,NA,
+01F7,107F,Unknown,UN,1312,NA,
+07A1,0010,Unknown,UN,8,ELSCINT1,
+07A1,1010,Unknown,UN,4,3.5,
+7FDF,0010,Unknown,UN,8,ELSCINT1,
+7FDF,10F0,Unknown,UN,0,NA,
+7FDF,10FF,Unknown,UN,0,,
+7FE0,0010,PixelData,OB,524288,PixelData,
