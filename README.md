@@ -1,16 +1,18 @@
-# DCM_TCC
-TCC MBA USP/ESALQ DATA SCIENCE AND ANALYTICS
+# DICOM_TOOLS
+
+MBA USP/ESALQ DATA SCIENCE AND ANALYTICS
 DICOM TOOLKIT 
 
-Este projeto foi desenvolvido como trabalho de conclusão do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ
+Este projeto foi desenvolvido como trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ
 Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
 
  ![usp](https://user-images.githubusercontent.com/87153755/192903945-c3f79221-d2be-41f2-98e7-b0161a85eb53.jpeg)    <------------------->   ![images](https://user-images.githubusercontent.com/87153755/192904060-adcf37ac-0d8f-4ec6-ab66-71482526845d.jpeg)
 
 
+## Reconhecimento de objetos em imagens de Tomografia de Abdómen no formato DICOM. 
 
-Reconhecimento de objetos em exames de tomografia de abdómen no formato DICOM.
-Foram selecionados 200 exames de tomografia de abdomen de 200 pacientes diferentes.
+Foram selecionados 200 exames de tomografia de abdomen de 200 pacientes diferentes. 
+Desses 200 exames foram geradas anotações pelo grupo de médicos e residentes da UNIFESP sobre a presença do órgão vesícula ou a presença do clipe cirúrgico em casos de pacientes que tiveram a vesícula retirada. Destas anotações surgiu a tabela annot_clean:
 
 
 ![annot_clean](https://user-images.githubusercontent.com/87153755/192905097-98bce90d-f05f-41a9-bc1a-665562182f4c.png)
@@ -19,6 +21,7 @@ Tabela de Frequencia da Variável Categórica Nominal 'Hipodistendida/Vesícula 
 
 ![tabela_frequencia](https://user-images.githubusercontent.com/87153755/192905780-bb9d48d3-5f41-4d0c-af1a-0d0375bfffaf.png)
 
+## Resultados do Treinamento da Rede Convolucional baseada no algoritmo YOLO
 
 ![train_yolo_dicom](https://user-images.githubusercontent.com/87153755/192905949-452ef140-4991-4908-9ec4-d59095065f2b.png)
 
