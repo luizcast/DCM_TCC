@@ -15,7 +15,7 @@
 #tensorflow() - https://www.tensorflow.org/
 #keras() - https://keras.io/
 
-func_init <-function(){pacotes <- c("keras", "tensorflow", "tidyverse", "oro.dicom","dcmtk", "readxl")
+func_init <-function(){pacotes <- c("keras", "tensorflow", "tidyverse", "oro.dicom", "dcmtk", "readxl")
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
   for(i in 1:length(instalador)) {
@@ -27,8 +27,10 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
 }
 }
 func_init()
+
 tf_config()
 tf_gpu_configured()
+read.delim2("/home/luiz/yolov7/runs/train/yolo_tomo_v1/results.txt", sep = '', quote = '', header = FALSE) -> as
 ###PATH####
 path = "/home/luiz/Desktop/DATA-SET_TESTE/"
 
@@ -45,7 +47,7 @@ path = "/home/luiz/Desktop/DATA-SET_TESTE/"
 #sortDicom(path = path, labelFormat = "%i_%s_%r", forceStack = FALSE)
 
 #### 3.ANONIMIZANDO A BASE #####
-
+#path = 'pasta raiz contendo os arquivos dicom'
 #library(dcmtk)
 #list.files(path) %>% as_tibble() -> anon_table
 #for (obs in anon_table) {paste(file.path(path),obs,sep='')} %>% as_tibble()-> anon_table
@@ -85,47 +87,51 @@ names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
 index_dicom %>% group_by(PatientID) %>% 
   left_join(annot_clean, by = c("PatientID" = "Patient ID")) %>% 
   ungroup() -> index_dicom
-index_dicom$FilePath <- paste(path, index_dicom$FileName, sep='')
 glimpse(index_dicom)
 
+
+#### GERANDO TABELAS #####
 index_dicom %>% dplyr::select(1:9) -> base_tratada
 base_tratada %>% dplyr::select(-5) -> base_tratada
 base_tratada$FilePath <- paste(path, base_tratada$FileName, sep='')
 glimpse(base_tratada)
+#write_csv(full, "full.csv")
+#write_csv(full_tratada, "full_tratada.csv")
 
-#### GERANDO TABELAS #####
-#TABELA FREQUENCIA
+#TABELAS FREQUENCIA
 table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
-#n de Imagens por SerieNumber
-base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)
 
-#TABELA SEM VESICULA COM CLIPE
+base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)-> frequencia_por_serie
+frequencia_por_serie
+
+#TABELA SEM VESICULA COM CLIPE : full_clipe
 base_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C")
 glimpse(base_clipe)
-#TABELA SEM VESICULA SEM CLIPE
+#TABELA SEM VESICULA SEM CLIPE : full_sem_clipe
 base_sem_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "S")
 glimpse(base_sem_clipe)
-#TABELA COM VESICULA HIPOESTENDIDA
+#TABELA COM VESICULA HIPOESTENDIDA : full_vesicula_hipodistendida
 base_vesicula_hipodistendida <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H")
 glimpse(base_vesicula_hipodistendida)
-#TABELA COM VESICULA NORMAL
+#TABELA COM VESICULA NORMAL : full_vesicula_normal
 base_vesicula_normal <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "V")
 base_vesicula_normal
-
-#TABELA COM AS IMAGENS DA VESICULA
+#TABELA COM AS IMAGENS DA VESICULA : frames_vesicula_normal
 base_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
-                                                               InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) -> base_frames_vesicula_normal
+                                                               InstanceNumber <= `Corte FINAL vesícula`), 1, 2)) -> base_frames_vesicula_normal
 base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_vesicula_normal
 glimpse(base_frames_vesicula_normal)
+#write_csv(frames_vesicula_normal, "frames_vesicula.csv")
 
 #QUAL SERA A SERIE? CORRESPONDENTE A IMAGEM ANOTADA?#
 base_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> tabela_n_por_serie
-base_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() %>% count(PatientID) 
+tabela_n_por_serie
+tabela_n_por_serie %>% count(PatientID)
 
 #RETIRANDO DA TABELA A "IMAGENS NO MEIO" DE CASA SERIE
 base_frames_vesicula_normal %>% unite("ID_SERIE", PatientID:SerieNumber) -> ID_SERIE
 base_frames_vesicula_normal[!duplicated(ID_SERIE$ID_SERIE),] -> NanaZinha
-NanaZinha$MEDIA <- c(NanaZinha$`Corte INICIAL vesícula` + NanaZinha$`Corte FINAL vesícula`) / 2
+NanaZinha$MEDIA <- c(NanaZinha$`Corte INICIAL vesícula`+NanaZinha$`Corte FINAL vesícula`)/2
 NanaZinha$MEDIA <- as.integer(NanaZinha$MEDIA)
 NanaZinha %>% unite("PatientID","PatientID","SerieNumber","MEDIA", sep = "_") %>% select(PatientID) -> gerador
 NanaZinha %>% select(PatientID,SerieNumber,MEDIA) -> PatienIDSerieNumberMEDIA
@@ -140,7 +146,6 @@ geradorPatienIDSerieNumberMEDIA
 
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c('H','V')) %>% select(1:6) %>% 
   filter(str_length(FileName) <= 21)-> tabela_GLM
-table(tabela_GLM$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 tabela_GLM %>% left_join(tabela_n_por_serie) -> tabela_GLM
 tabela_GLM %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
                                       InstanceNumber <= `Corte FINAL vesícula`), 1,0)) %>% select(-5,-6) -> tabela_GLM
@@ -176,11 +181,11 @@ predict(object = modelo_fit,
 tabela_GLM$fit %>% summary()
 ggplot(tabela_GLM, aes(fit)) + geom_histogram(bins = 10)
 base_clipe$fit %>% summary()
-ggplot(base_clipe, aes(fit)) + geom_histogram(bins = 10)
+ggplot(base_clipe, aes(fit)) + geom_histogram(bins = 20)
 base_clipe %>% filter(fit >= 0.025 & fit <= 0.21)
 #achando a média
-c(as.integer(mean(base_vesicula_normal$`Corte INICIAL vesícula`)))-10 -> ENTRADA
-c(as.integer(mean(base_frames_vesicula_normal$`Corte FINAL vesícula`)))+10 -> SAIDA
+c(as.integer(mean(base_vesicula_normal$`Corte INICIAL vesícula`)))-3 -> ENTRADA
+c(as.integer(mean(base_frames_vesicula_normal$`Corte FINAL vesícula`)))+4 -> SAIDA
 base_clipe %>% filter(fit >= 0.025 & fit <= 0.21) %>% filter(InstanceNumber >= ENTRADA & InstanceNumber <= SAIDA) -> clipe_select
 
 
@@ -196,7 +201,6 @@ bomba %>% group_by(FilePath) %>%
     mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> bomba_com_img
 clipe_select %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> clipe_select_outs
-
 
 list.files("~/Desktop/IMAGENS_KERAS/VESICULA/") %>%  as_tibble() -> vesic
 separate(vesic, col = value, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) -> vesic
