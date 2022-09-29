@@ -17,17 +17,20 @@ Desses 200 exames foram geradas anotações pelo grupo de médicos e residentes 
 
 ![annot_clean](https://user-images.githubusercontent.com/87153755/192905097-98bce90d-f05f-41a9-bc1a-665562182f4c.png)
 
-Tabela de Frequencia da Variável Categórica Nominal 'Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`
+## Tabela de Frequencia da Variável Categórica Nominal 'Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`
 
 ![tabela_frequencia](https://user-images.githubusercontent.com/87153755/192905780-bb9d48d3-5f41-4d0c-af1a-0d0375bfffaf.png)
+
+
+Foram treinadas 2 labels para identificar a presença da vesícula, e a presença do clipes cirúrgicos colocado em pacientes que passam por cirurgia de retirada de órgãos.
+
+
 
 ## Resultados do Treinamento da Rede Convolucional baseada no algoritmo YOLO
 
 ![train_yolo_dicom](https://user-images.githubusercontent.com/87153755/192905949-452ef140-4991-4908-9ec4-d59095065f2b.png)
 
         
-Foram treinadas 2 labels para identificar a presença da vesícula, e a presença do clipes cirúrgicos colocado em pacientes que passam por cirurgia de retirada de órgãos.
-
 
 
 ### CLIPE ###
