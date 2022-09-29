@@ -9,7 +9,7 @@ Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de
  ![usp](https://user-images.githubusercontent.com/87153755/192903945-c3f79221-d2be-41f2-98e7-b0161a85eb53.jpeg)    <------------------->   ![images](https://user-images.githubusercontent.com/87153755/192904060-adcf37ac-0d8f-4ec6-ab66-71482526845d.jpeg)
 
 
-## Reconhecimento de objetos usado para reconhecer padrões em imagens de Tomografia de Abdómen no formato DICOM. 
+## Reconhecimento Padrões em imagens de Tomografia de Abdómen no formato DICOM. 
 
 Foram selecionados 200 exames de tomografia de abdomen de 200 pacientes diferentes. 
 Desses 200 exames foram geradas anotações pelo grupo de médicos e residentes da UNIFESP sobre a presença do órgão vesícula ou a presença do clipe cirúrgico em casos de pacientes que tiveram a vesícula retirada. Surgiram 4 classes:
