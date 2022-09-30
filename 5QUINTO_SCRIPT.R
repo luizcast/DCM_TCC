@@ -18,7 +18,7 @@
 func_init <-function(){pacotes <- c("keras", "tensorflow", "tidyverse", "oro.dicom", "dcmtk", "readxl")
 if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
   instalador <- pacotes[!pacotes %in% installed.packages()]
-  for(i in 1:length(instalador)) {
+  for(i in 1:seq_along(instalador)) {
     install.packages(instalador, dependencies = T)
     break()}
   sapply(pacotes, require, character = T) 
@@ -30,7 +30,7 @@ func_init()
 
 tf_config()
 tf_gpu_configured()
-read.delim2("/home/luiz/yolov7/runs/train/yolo_tomo_v1/results.txt", sep = '', quote = '', header = FALSE) -> as
+
 ###PATH####
 path = "/home/luiz/Desktop/DATA-SET_TESTE/"
 
@@ -88,7 +88,7 @@ index_dicom %>% group_by(PatientID) %>%
   left_join(annot_clean, by = c("PatientID" = "Patient ID")) %>% 
   ungroup() -> index_dicom
 glimpse(index_dicom)
-
+index_dicom %>% filter(is.na(InstanceNumber))
 
 #### GERANDO TABELAS #####
 index_dicom %>% dplyr::select(1:9) -> base_tratada
@@ -185,7 +185,7 @@ ggplot(base_clipe, aes(fit)) + geom_histogram(bins = 20)
 base_clipe %>% filter(fit >= 0.025 & fit <= 0.21)
 #achando a média
 c(as.integer(mean(base_vesicula_normal$`Corte INICIAL vesícula`)))-3 -> ENTRADA
-c(as.integer(mean(base_frames_vesicula_normal$`Corte FINAL vesícula`)))+4 -> SAIDA
+c(as.integer(mean(base_frames_vesicula_normal$`Corte FINAL vesícula`)))+ 4 -> SAIDA
 base_clipe %>% filter(fit >= 0.025 & fit <= 0.21) %>% filter(InstanceNumber >= ENTRADA & InstanceNumber <= SAIDA) -> clipe_select
 
 

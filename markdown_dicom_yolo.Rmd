@@ -1,0 +1,101 @@
+---
+title: "Dicom Detect uning YOLOv7"
+author: "Luiz Castiglioni"
+date: "`r format(Sys.time(), '%d/%m/%Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo =TRUE)
+```
+
+## DATA INFO
+
+TOTAL FILES: 165371 TOTAL SIZE: 89.9GB FILE FORMAT: Tomographic images and Metadata of Medical Exams in DICOM format FILE EXTENSION: ".dcm"
+
+## Dicom Medicine Standarization
+
+<https://www.dicomstandard.org/ai>
+
+## YOLO Algoritimo
+
+<https://pjreddie.com/darknet/yolo/>
+
+### Listando os Arquivos da pasta do github
+
+<https://github.com/luizcast/DCM_TCC>
+
+```{r, include=TRUE}
+list.files(include.dirs = TRUE)
+```
+
+## Pacotes utilizados no projeto
+
+-   oro.dicom - <https://cran.r-project.org/web/packages/oro.dicom/index.html>
+-   dcmtk - <https://dicom.offis.de/dcmtk.php.en>
+-   tidyverse - <https://www.tidyverse.org/>
+-   tensorflow - <https://www.tensorflow.org/>
+-   keras - <https://keras.io/>
+
+```{r}
+
+pacotes <- c("keras", "tensorflow", "tidyverse", "oro.dicom","dcmtk", "readxl")
+if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
+  instalador <- pacotes[!pacotes %in% installed.packages()]
+  for(i in 1:length(instalador)) {
+    install.packages(instalador, dependencies = T)
+    break()}
+  sapply(pacotes, require, character = T) 
+} else {
+  sapply(pacotes, require, character = T) 
+}
+
+
+tf_gpu_configured()
+tf_config()
+```
+
+### Reconhecendo Padrões em imagens de Tomografia de Abdómen no formato DICOM.
+
+Este projeto foi desenvolvido como trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ. Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
+
+Foram selecionados 200 exames de tomografia de abdomen de 200 pacientes diferentes. Desses 200 exames foram geradas anotações pelo grupo de médicos e residentes da UNIFESP sobre a presença do órgão vesícula ou a presença do clipe cirúrgico em casos de pacientes que tiveram a vesícula retirada. Surgiram 4 classes:
+
+-   Pacientes com Vesícula Normal
+
+-   Pacientes com Vesícula Hipodistendida
+
+-   Pacientes sem Vesícula e com Clipe Cirúrgico
+
+-   Pacientes sem Vesícula e sem Clipe Cirúrgico
+
+Destas anotações surgiu a tabela **annot_clean**
+
+```{r}
+read_excel("~/Desktop/USP/TCC/projeto_TCC/TABLEs/annot_clean.xlsx") %>% as_tibble() -> annot_clean
+annot_clean
+```
+
+Vamos praticar um data wrangling ensinado no curso!
+
+```{r annot_clean, warning=FALSE}
+
+
+gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Densidade não habitual (sim=1, não=0)`) -> 
+  annot_clean$`Densidade não habitual (sim=1, não=0)`
+gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte INICIAL vesícula`) -> 
+  annot_clean$`Corte INICIAL vesícula`
+gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte FINAL vesícula`) -> 
+  annot_clean$`Corte FINAL vesícula`
+
+annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` <- as.factor(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
+annot_clean$`Corte FINAL vesícula` <- as.numeric(annot_clean$`Corte FINAL vesícula`)
+annot_clean$`Corte INICIAL vesícula` <- as.numeric(annot_clean$`Corte INICIAL vesícula`)
+annot_clean$`Densidade não habitual (sim=1, não=0)` <- as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
+annot_clean
+colnames(annot_clean)
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

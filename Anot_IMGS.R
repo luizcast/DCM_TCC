@@ -26,7 +26,7 @@ yolo_luiz <- image_darknet_model(type = 'detect',
                                      labels = system.file(package="image.darknet", "include", "darknet", "data", "voc.names"))
 
 system.file(package="image.darknet", "include", "darknet", "cfg", "tiny.cfg")
-
+system.file()
 image
 #Image Detection
 x <- image_darknet_detect(file = "tinyyolo_in_R/google-car.png", 
