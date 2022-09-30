@@ -1,7 +1,7 @@
-# DICOM_TOOLS
+# DICOM_YOLOv7
 
 MBA USP/ESALQ DATA SCIENCE AND ANALYTICS
-DICOM TOOLKIT 
+DICOM TOMOGRAPHY EXAMS OBJECT DETECTION USING DARKNET YOLOv7 ALGORITM
 
 Este projeto foi desenvolvido como trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ
 Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
