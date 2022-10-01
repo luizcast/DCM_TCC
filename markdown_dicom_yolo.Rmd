@@ -1,35 +1,49 @@
 ---
-title: "Dicom Detect uning YOLOv7"
+title: "Dicom Detect with YOLOv7"
 author: "Luiz Castiglioni"
 date: "`r format(Sys.time(), '%d/%m/%Y')`"
-output: html_document
+output:
+  pdf_document: default
+  toc: yes
+  toc_depth: 2
+  num_sections: yes
+  html_document: null
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo =TRUE)
 ```
 
-## DATA INFO
+```{r, warning=FALSE, echo=FALSE, include=FALSE}
+library(magick)
+```
 
-TOTAL FILES: 165371 TOTAL SIZE: 89.9GB FILE FORMAT: Tomographic images and Metadata of Medical Exams in DICOM format FILE EXTENSION: ".dcm"
+```{r echo=FALSE}
+magick::image_read('IMGs/test/X0003852776_2_69.png') %>% plot()
+```
+Trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ. Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
 
-## Dicom Medicine Standarization
+#### Data info
 
-<https://www.dicomstandard.org/ai>
+Tomographic images and Metadata of Medical Exams in DICOM Standards Format
 
-## YOLO Algoritimo
+-   total files: 165371
+-   total size: 89.9GB
+-   format: ".dcm"
 
-<https://pjreddie.com/darknet/yolo/>
+#### Links
 
-### Listando os Arquivos da pasta do github
+-   Dicom Medicine Standards <https://www.dicomstandard.org/ai>
+-   YOLO <https://pjreddie.com/darknet/yolo/>
+-   Github <https://github.com/luizcast/DCM_TCC>
 
-<https://github.com/luizcast/DCM_TCC>
-
+#### Arquivos do projeto
 ```{r, include=TRUE}
 list.files(include.dirs = TRUE)
 ```
 
-## Pacotes utilizados no projeto
+#### Pacotes utilizados no projeto
 
 -   oro.dicom - <https://cran.r-project.org/web/packages/oro.dicom/index.html>
 -   dcmtk - <https://dicom.offis.de/dcmtk.php.en>
@@ -55,9 +69,18 @@ tf_gpu_configured()
 tf_config()
 ```
 
+### Configurações da Máquina
+
+```{bash}
+neofetch --stdout
+```
+
+```{bash}
+nvidia-smi
+```
+
 ### Reconhecendo Padrões em imagens de Tomografia de Abdómen no formato DICOM.
 
-Este projeto foi desenvolvido como trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ. Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
 
 Foram selecionados 200 exames de tomografia de abdomen de 200 pacientes diferentes. Desses 200 exames foram geradas anotações pelo grupo de médicos e residentes da UNIFESP sobre a presença do órgão vesícula ou a presença do clipe cirúrgico em casos de pacientes que tiveram a vesícula retirada. Surgiram 4 classes:
 
@@ -76,26 +99,52 @@ read_excel("~/Desktop/USP/TCC/projeto_TCC/TABLEs/annot_clean.xlsx") %>% as_tibbl
 annot_clean
 ```
 
-Vamos praticar um data wrangling ensinado no curso!
+### Preparando a Base Annot_Clean
 
 ```{r annot_clean, warning=FALSE}
-
-
-gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Densidade não habitual (sim=1, não=0)`) -> 
+gsub(pattern = "Não se aplica", replacement = "NA", 
+     annot_clean$`Densidade não habitual (sim=1, não=0)`) ->
   annot_clean$`Densidade não habitual (sim=1, não=0)`
-gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte INICIAL vesícula`) -> 
+gsub(pattern = "Não se aplica", replacement = "NA", 
+     annot_clean$`Corte INICIAL vesícula`) -> 
   annot_clean$`Corte INICIAL vesícula`
-gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte FINAL vesícula`) -> 
+gsub(pattern = "Não se aplica", replacement = "NA", 
+     annot_clean$`Corte FINAL vesícula`) -> 
   annot_clean$`Corte FINAL vesícula`
-
-annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` <- as.factor(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
-annot_clean$`Corte FINAL vesícula` <- as.numeric(annot_clean$`Corte FINAL vesícula`)
-annot_clean$`Corte INICIAL vesícula` <- as.numeric(annot_clean$`Corte INICIAL vesícula`)
-annot_clean$`Densidade não habitual (sim=1, não=0)` <- as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
+annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` <-
+  as.factor(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
+annot_clean$`Corte FINAL vesícula` <- 
+  as.numeric(annot_clean$`Corte FINAL vesícula`)
+annot_clean$`Corte INICIAL vesícula` <- 
+  as.numeric(annot_clean$`Corte INICIAL vesícula`)
+annot_clean$`Densidade não habitual (sim=1, não=0)` <-
+  as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
 annot_clean
 colnames(annot_clean)
-
-
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Criando Dataset
+
+```{r, warning=FALSE}
+path = "/home/luiz/Desktop/DATA-SET_TESTE/"
+list.files(path) %>%  as_tibble() -> array_arquivos_dicom_tratados
+separate(array_arquivos_dicom_tratados, col = value, sep = "_", into = c("PatientID","SerieNumber","InstanceNumber")) -> index_dicom
+index_dicom$InstanceNumber %>% str_sub(end=-5) -> index_dicom$InstanceNumber
+bind_cols(array_arquivos_dicom_tratados,index_dicom) -> index_dicom
+names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
+
+          index_dicom$PatientID <- as.numeric(index_dicom$PatientID)
+          index_dicom$SerieNumber = as.numeric(index_dicom$SerieNumber)
+          index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber) 
+
+#join com annot_clean
+index_dicom %>% group_by(PatientID) %>% 
+  left_join(annot_clean, by = c("PatientID" = "Patient ID")) %>% 
+  ungroup() -> index_dicom
+index_dicom$FilePath <- paste(path, index_dicom$FileName, sep='')
+index_dicom %>% dplyr::select(1:9) -> base_tratada
+base_tratada %>% dplyr::select(-5) -> base_tratada
+base_tratada$FilePath <- paste(path, base_tratada$FileName, sep='')
+base_tratada
+```
+
