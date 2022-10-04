@@ -3,11 +3,11 @@ title: "Dicom Detect with YOLOv7"
 author: "Luiz Castiglioni"
 date: "`r format(Sys.time(), '%d/%m/%Y')`"
 output:
-  pdf_document: default
+  html_document: null
   toc: yes
   toc_depth: 2
   num_sections: yes
-  html_document: null
+  pdf_document: default
   word_document: default
 ---
 
@@ -22,9 +22,12 @@ library(magick)
 ```{r echo=FALSE}
 magick::image_read('IMGs/test/X0003852776_2_69.png') %>% plot()
 ```
-Trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and ANalytics da USP / ESALQ. Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
 
-#### Data info
+Trabalho de conclusão de curso do aluno Luiz Castiglioni no curso do MBA - Data Science and Analytics da USP / ESALQ. Trabalho desenvolvido em parceria com o departamento de AI da Escola Paulista de Medicina UNIFESP.
+
+## Especificações do Projeto
+
+### Data info
 
 Tomographic images and Metadata of Medical Exams in DICOM Standards Format
 
@@ -32,18 +35,36 @@ Tomographic images and Metadata of Medical Exams in DICOM Standards Format
 -   total size: 89.9GB
 -   format: ".dcm"
 
-#### Links
+### Links
 
 -   Dicom Medicine Standards <https://www.dicomstandard.org/ai>
 -   YOLO <https://pjreddie.com/darknet/yolo/>
 -   Github <https://github.com/luizcast/DCM_TCC>
 
-#### Arquivos do projeto
+### Arquivos do projeto
+
 ```{r, include=TRUE}
 list.files(include.dirs = TRUE)
 ```
+### Configurações da Máquina
 
-#### Pacotes utilizados no projeto
+```{bash}
+neofetch --stdout
+```
+
+```{bash}
+nvidia-smi
+```
+
+### Configurações do RStudio
+```{r}
+#RStudio 2022.07.2+576 "Spotted Wakerobin" 
+#Release (e7373ef832b49b2a9b88162cfe7eac5f22c40b34, 2022-09-06) for Ubuntu Bionic
+version
+```
+
+
+### Pacotes utilizados no projeto
 
 -   oro.dicom - <https://cran.r-project.org/web/packages/oro.dicom/index.html>
 -   dcmtk - <https://dicom.offis.de/dcmtk.php.en>
@@ -63,24 +84,11 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
 } else {
   sapply(pacotes, require, character = T) 
 }
-
-
 tf_gpu_configured()
-tf_config()
 ```
 
-### Configurações da Máquina
 
-```{bash}
-neofetch --stdout
-```
-
-```{bash}
-nvidia-smi
-```
-
-### Reconhecendo Padrões em imagens de Tomografia de Abdómen no formato DICOM.
-
+## Reconhecendo Padrões em imagens de Tomografia de Abdómen no formato DICOM.
 
 Foram selecionados 200 exames de tomografia de abdomen de 200 pacientes diferentes. Desses 200 exames foram geradas anotações pelo grupo de médicos e residentes da UNIFESP sobre a presença do órgão vesícula ou a presença do clipe cirúrgico em casos de pacientes que tiveram a vesícula retirada. Surgiram 4 classes:
 
@@ -97,6 +105,7 @@ Destas anotações surgiu a tabela **annot_clean**
 ```{r}
 read_excel("~/Desktop/USP/TCC/projeto_TCC/TABLEs/annot_clean.xlsx") %>% as_tibble() -> annot_clean
 annot_clean
+colnames(annot_clean)
 ```
 
 ### Preparando a Base Annot_Clean
@@ -120,7 +129,6 @@ annot_clean$`Corte INICIAL vesícula` <-
 annot_clean$`Densidade não habitual (sim=1, não=0)` <-
   as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
 annot_clean
-colnames(annot_clean)
 ```
 
 ### Criando Dataset
@@ -132,12 +140,16 @@ separate(array_arquivos_dicom_tratados, col = value, sep = "_", into = c("Patien
 index_dicom$InstanceNumber %>% str_sub(end=-5) -> index_dicom$InstanceNumber
 bind_cols(array_arquivos_dicom_tratados,index_dicom) -> index_dicom
 names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
-
           index_dicom$PatientID <- as.numeric(index_dicom$PatientID)
           index_dicom$SerieNumber = as.numeric(index_dicom$SerieNumber)
-          index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber) 
+          index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber)
+          glimpse(index_dicom)
+```
 
-#join com annot_clean
+### Join das tabelas
+#
+
+```{r}
 index_dicom %>% group_by(PatientID) %>% 
   left_join(annot_clean, by = c("PatientID" = "Patient ID")) %>% 
   ungroup() -> index_dicom
@@ -147,4 +159,36 @@ base_tratada %>% dplyr::select(-5) -> base_tratada
 base_tratada$FilePath <- paste(path, base_tratada$FileName, sep='')
 base_tratada
 ```
+
+### Extraindo e Comparando Tabelas
+
+```{r}
+#TABELA FREQUENCIA
+table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
+
+#N DE IMAGENS POR SERIENUMBER
+base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)
+
+#TABELA SEM VESICULA COM CLIPE
+base_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C")
+glimpse(base_clipe)
+
+#TABELA SEM VESICULA SEM CLIPE
+base_sem_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "S")
+glimpse(base_sem_clipe)
+
+#TABELA COM VESICULA HIPOESTENDIDA
+base_vesicula_hipodistendida <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H")
+glimpse(base_vesicula_hipodistendida)
+
+#TABELA COM VESICULA NORMAL
+base_vesicula_normal <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "V")
+glimpse(base_vesicula_normal)
+
+#TABELA COM AS IMAGENS DA VESICULA
+base_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) -> base_frames_vesicula_normal
+base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_vesicula_normal
+glimpse(base_frames_vesicula_normal)
+```
+
 
