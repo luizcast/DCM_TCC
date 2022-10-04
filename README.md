@@ -54,6 +54,6 @@ Foram treinadas 2 labels para identificar a presença da vesícula, e a presenç
 - Todas as imagens foram anotadas com o labelImg
 
 
-o peso gerado pela rede convolucional esta no branch master yolo_dicom_v1.pt
+o peso gerado algoritmo esta no branch master yolo_dicom_v1.pt
 
 ![results](https://user-images.githubusercontent.com/87153755/192903322-95b4a409-7217-453f-b94d-18a3191bc990.png)
