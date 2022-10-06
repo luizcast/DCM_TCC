@@ -73,18 +73,12 @@ version
 -   keras - <https://keras.io/>
 
 ```{r}
-
-pacotes <- c("keras", "tensorflow", "tidyverse", "oro.dicom","dcmtk", "readxl")
-if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
-  instalador <- pacotes[!pacotes %in% installed.packages()]
-  for(i in 1:length(instalador)) {
-    install.packages(instalador, dependencies = T)
-    break()}
-  sapply(pacotes, require, character = T) 
-} else {
-  sapply(pacotes, require, character = T) 
-}
-tf_gpu_configured()
+library("keras") 
+library("tensorflow")
+library("tidyverse")
+library("oro.dicom")
+library("dcmtk")
+library("readxl")
 ```
 
 
@@ -147,7 +141,7 @@ names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
 ```
 
 ### Join das tabelas
-#
+
 
 ```{r}
 index_dicom %>% group_by(PatientID) %>% 
@@ -188,7 +182,8 @@ glimpse(base_vesicula_normal)
 #TABELA COM AS IMAGENS DA VESICULA
 base_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) -> base_frames_vesicula_normal
 base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_vesicula_normal
-glimpse(base_frames_vesicula_normal)
+base_frames_vesicula_normal
+
 ```
 
 

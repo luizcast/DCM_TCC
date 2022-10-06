@@ -11,7 +11,7 @@
 
 <meta name="author" content="Luiz Castiglioni" />
 
-<meta name="date" content="2022-04-10" />
+<meta name="date" content="2022-06-10" />
 
 <title>Dicom Detect with YOLOv7</title>
 
@@ -358,7 +358,7 @@ display: none;
 
 <h1 class="title toc-ignore">Dicom Detect with YOLOv7</h1>
 <h4 class="author">Luiz Castiglioni</h4>
-<h4 class="date">04/10/2022</h4>
+<h4 class="date">06/10/2022</h4>
 
 </div>
 
@@ -409,8 +409,8 @@ Format</p>
 ## OS: Linux Mint 21 x86_64 
 ## Host: Dell G15 5515 1.7.1 
 ## Kernel: 5.15.0-48-generic 
-## Uptime: 3 hours, 2 mins 
-## Packages: 3375 (dpkg), 9 (flatpak), 11 (snap) 
+## Uptime: 3 hours, 26 mins 
+## Packages: 3380 (dpkg), 13 (flatpak), 11 (snap) 
 ## Shell: bash 5.1.16 
 ## Resolution: 1920x1080 
 ## DE: Cinnamon 
@@ -422,9 +422,9 @@ Format</p>
 ## CPU: AMD Ryzen 7 5800H with Radeon Graphics (16) @ 4.463GHz 
 ## GPU: NVIDIA GeForce RTX 3060 Mobile / Max-Q 
 ## GPU: AMD ATI 06:00.0 Cezanne 
-## Memory: 5113MiB / 15342MiB</code></pre>
+## Memory: 5211MiB / 15342MiB</code></pre>
 <pre class="bash"><code>nvidia-smi</code></pre>
-<pre><code>## Tue Oct  4 14:43:49 2022       
+<pre><code>## Thu Oct  6 11:38:31 2022       
 ## +-----------------------------------------------------------------------------+
 ## | NVIDIA-SMI 515.65.01    Driver Version: 515.65.01    CUDA Version: 11.7     |
 ## |-------------------------------+----------------------+----------------------+
@@ -433,7 +433,7 @@ Format</p>
 ## |                               |                      |               MIG M. |
 ## |===============================+======================+======================|
 ## |   0  NVIDIA GeForce ...  Off  | 00000000:01:00.0 Off |                  N/A |
-## | N/A   52C    P5    17W /  N/A |    642MiB /  6144MiB |     64%      Default |
+## | N/A   50C    P5    14W /  N/A |    528MiB /  6144MiB |     30%      Default |
 ## |                               |                      |                  N/A |
 ## +-------------------------------+----------------------+----------------------+
 ##                                                                                
@@ -442,12 +442,11 @@ Format</p>
 ## |  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
 ## |        ID   ID                                                   Usage      |
 ## |=============================================================================|
-## |    0   N/A  N/A      1334      G   /usr/lib/xorg/Xorg                200MiB |
-## |    0   N/A  N/A      2608      G   cinnamon                           40MiB |
-## |    0   N/A  N/A     14319      G   ...335803002064937364,131072       21MiB |
-## |    0   N/A  N/A     22295      G   rstudio                            61MiB |
-## |    0   N/A  N/A     22347      C   .../lib/rstudio/bin/rsession      273MiB |
-## |    0   N/A  N/A     35423      G   ...974436258714513412,131072       38MiB |
+## |    0   N/A  N/A      1286      G   /usr/lib/xorg/Xorg                266MiB |
+## |    0   N/A  N/A      2544      G   cinnamon                           94MiB |
+## |    0   N/A  N/A     11427      G   ...436071394914752260,131072       10MiB |
+## |    0   N/A  N/A     15891      G   ...843406173015110053,131072       83MiB |
+## |    0   N/A  N/A     26126      G   /usr/lib/rstudio/bin/rstudio       69MiB |
 ## +-----------------------------------------------------------------------------+</code></pre>
 </div>
 <div id="configurações-do-rstudio" class="section level3">
@@ -480,19 +479,9 @@ version</code></pre>
 <li>tensorflow - <a href="https://www.tensorflow.org/" class="uri">https://www.tensorflow.org/</a></li>
 <li>keras - <a href="https://keras.io/" class="uri">https://keras.io/</a></li>
 </ul>
-<pre class="r"><code>pacotes &lt;- c(&quot;keras&quot;, &quot;tensorflow&quot;, &quot;tidyverse&quot;, &quot;oro.dicom&quot;,&quot;dcmtk&quot;, &quot;readxl&quot;)
-if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
-  instalador &lt;- pacotes[!pacotes %in% installed.packages()]
-  for(i in 1:length(instalador)) {
-    install.packages(instalador, dependencies = T)
-    break()}
-  sapply(pacotes, require, character = T) 
-} else {
-  sapply(pacotes, require, character = T) 
-}</code></pre>
-<pre><code>## Loading required package: keras</code></pre>
-<pre><code>## Loading required package: tensorflow</code></pre>
-<pre><code>## Loading required package: tidyverse</code></pre>
+<pre class="r"><code>library(&quot;keras&quot;) 
+library(&quot;tensorflow&quot;)
+library(&quot;tidyverse&quot;)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
 ## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
 ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
@@ -500,21 +489,11 @@ if(sum(as.numeric(!pacotes %in% installed.packages())) != 0){
 ## ✔ readr   2.1.2      ✔ forcats 0.5.2 
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## Loading required package: oro.dicom
-## 
-## oro.dicom 0.5.3
-## 
-## Loading required package: dcmtk
-## 
-## Loading required package: readxl</code></pre>
-<pre><code>##      keras tensorflow  tidyverse  oro.dicom      dcmtk     readxl 
-##       TRUE       TRUE       TRUE       TRUE       TRUE       TRUE</code></pre>
-<pre class="r"><code>tf_gpu_configured()</code></pre>
-<pre><code>## Loaded Tensorflow version 2.9.2</code></pre>
-<pre><code>## TensorFlow built with CUDA:  TRUE 
-## GPU device name:  /device:GPU:0</code></pre>
-<pre><code>## [1] TRUE</code></pre>
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(&quot;oro.dicom&quot;)</code></pre>
+<pre><code>## oro.dicom 0.5.3</code></pre>
+<pre class="r"><code>library(&quot;dcmtk&quot;)
+library(&quot;readxl&quot;)</code></pre>
 </div>
 </div>
 <div id="reconhecendo-padrões-em-imagens-de-tomografia-de-abdómen-no-formato-dicom." class="section level2">
@@ -625,10 +604,6 @@ names(index_dicom) &lt;- c(&quot;FileName&quot;,&quot;PatientID&quot;,&quot;Seri
 </div>
 <div id="join-das-tabelas" class="section level3">
 <h3>Join das tabelas</h3>
-</div>
-</div>
-<div id="section" class="section level1">
-<h1></h1>
 <pre class="r"><code>index_dicom %&gt;% group_by(PatientID) %&gt;% 
   left_join(annot_clean, by = c(&quot;PatientID&quot; = &quot;Patient ID&quot;)) %&gt;% 
   ungroup() -&gt; index_dicom
@@ -655,6 +630,7 @@ base_tratada</code></pre>
 ## #   ⁵​`Corte FINAL vesícula`,
 ## #   ⁶​`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`,
 ## #   ⁷​`Densidade não habitual (sim=1, não=0)`, ⁸​FilePath</code></pre>
+</div>
 <div id="extraindo-e-comparando-tabelas" class="section level3">
 <h3>Extraindo e Comparando Tabelas</h3>
 <pre class="r"><code>#TABELA FREQUENCIA
@@ -737,19 +713,25 @@ glimpse(base_vesicula_normal)</code></pre>
 <pre class="r"><code>#TABELA COM AS IMAGENS DA VESICULA
 base_vesicula_normal %&gt;% mutate(posicao_interesse = ifelse(c(InstanceNumber &gt;= `Corte INICIAL vesícula` &amp; InstanceNumber &lt;= `Corte FINAL vesícula`), 1, 0)) -&gt; base_frames_vesicula_normal
 base_frames_vesicula_normal %&gt;% filter(posicao_interesse == 1) -&gt; base_frames_vesicula_normal
-glimpse(base_frames_vesicula_normal)</code></pre>
-<pre><code>## Rows: 4,110
-## Columns: 10
-## $ FileName                                                &lt;chr&gt; &quot;0000483240_4_…
-## $ PatientID                                               &lt;dbl&gt; 483240, 483240…
-## $ SerieNumber                                             &lt;dbl&gt; 4, 4, 4, 4, 4,…
-## $ InstanceNumber                                          &lt;dbl&gt; 40, 41, 42, 43…
-## $ `Corte INICIAL vesícula`                                &lt;dbl&gt; 40, 40, 40, 40…
-## $ `Corte FINAL vesícula`                                  &lt;dbl&gt; 56, 56, 56, 56…
-## $ `Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` &lt;fct&gt; V, V, V, V, V,…
-## $ `Densidade não habitual (sim=1, não=0)`                 &lt;dbl&gt; 1, 1, 1, 1, 1,…
-## $ FilePath                                                &lt;chr&gt; &quot;/home/luiz/De…
-## $ posicao_interesse                                       &lt;dbl&gt; 1, 1, 1, 1, 1,…</code></pre>
+base_frames_vesicula_normal</code></pre>
+<pre><code>## # A tibble: 4,110 × 10
+##    FileName      Patie…¹ Serie…² Insta…³ Corte…⁴ Corte…⁵ Hipod…⁶ Densi…⁷ FileP…⁸
+##    &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt; &lt;chr&gt;  
+##  1 0000483240_4…  483240       4      40      40      56 V             1 /home/…
+##  2 0000483240_4…  483240       4      41      40      56 V             1 /home/…
+##  3 0000483240_4…  483240       4      42      40      56 V             1 /home/…
+##  4 0000483240_4…  483240       4      43      40      56 V             1 /home/…
+##  5 0000483240_4…  483240       4      44      40      56 V             1 /home/…
+##  6 0000483240_4…  483240       4      45      40      56 V             1 /home/…
+##  7 0000483240_4…  483240       4      46      40      56 V             1 /home/…
+##  8 0000483240_4…  483240       4      47      40      56 V             1 /home/…
+##  9 0000483240_4…  483240       4      48      40      56 V             1 /home/…
+## 10 0000483240_4…  483240       4      49      40      56 V             1 /home/…
+## # … with 4,100 more rows, 1 more variable: posicao_interesse &lt;dbl&gt;, and
+## #   abbreviated variable names ¹​PatientID, ²​SerieNumber, ³​InstanceNumber,
+## #   ⁴​`Corte INICIAL vesícula`, ⁵​`Corte FINAL vesícula`,
+## #   ⁶​`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`,
+## #   ⁷​`Densidade não habitual (sim=1, não=0)`, ⁸​FilePath</code></pre>
 </div>
 </div>
 
