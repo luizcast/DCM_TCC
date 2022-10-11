@@ -3,11 +3,11 @@ title: "Dicom Detect with YOLOv7"
 author: "Luiz Castiglioni"
 date: "`r format(Sys.time(), '%d/%m/%Y')`"
 output:
-  html_document: null
+  pdf_document: default
   toc: yes
   toc_depth: 2
   num_sections: yes
-  pdf_document: default
+  html_document: null
   word_document: default
 ---
 
@@ -133,8 +133,8 @@ index_dicom$InstanceNumber %>% str_sub(end=-5) -> index_dicom$InstanceNumber
 bind_cols(array_arquivos_dicom_tratados,index_dicom) -> index_dicom
 names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
           index_dicom$PatientID <- as.numeric(index_dicom$PatientID)
-          index_dicom$SerieNumber = as.numeric(index_dicom$SerieNumber)
-          index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber)
+          index_dicom$SerieNumber <- as.numeric(index_dicom$SerieNumber)
+          index_dicom$InstanceNumber <- as.numeric(index_dicom$InstanceNumber)
           glimpse(index_dicom)
 ```
 
