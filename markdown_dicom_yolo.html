@@ -11,7 +11,7 @@
 
 <meta name="author" content="Luiz Castiglioni" />
 
-<meta name="date" content="2022-08-10" />
+<meta name="date" content="2022-10-10" />
 
 <title>Dicom Detect with YOLOv7</title>
 
@@ -358,7 +358,7 @@ display: none;
 
 <h1 class="title toc-ignore">Dicom Detect with YOLOv7</h1>
 <h4 class="author">Luiz Castiglioni</h4>
-<h4 class="date">08/10/2022</h4>
+<h4 class="date">10/10/2022</h4>
 
 </div>
 
@@ -399,7 +399,8 @@ Format</p>
 ## [11] &quot;markdown_dicom_yolo.docx&quot;  &quot;markdown_dicom_yolo.html&quot; 
 ## [13] &quot;markdown_dicom_yolo.pdf&quot;   &quot;markdown_dicom_yolo.Rmd&quot;  
 ## [15] &quot;rascunho.R&quot;                &quot;README.md&quot;                
-## [17] &quot;TABLEs&quot;                    &quot;yolo_dicom_v1.pt&quot;</code></pre>
+## [17] &quot;slides.odp&quot;                &quot;TABLEs&quot;                   
+## [19] &quot;yolo_dicom_v1.pt&quot;</code></pre>
 </div>
 <div id="configurações-da-máquina" class="section level3">
 <h3>Configurações da Máquina</h3>
@@ -408,13 +409,13 @@ Format</p>
 ## -------- 
 ## OS: Linux Mint 21 x86_64 
 ## Host: Dell G15 5515 1.7.1 
-## Kernel: 5.15.0-48-generic 
+## Kernel: 5.15.0-50-generic 
 ## Shell: bash 5.1.16 
 ## Terminal: R 
 ## CPU: AMD Ryzen 7 5800H with Radeon Graphics (16) @ 4.463GHz 
 ## GPU: NVIDIA GeForce RTX 3060 Mobile / Max-Q 
 ## GPU: AMD ATI 06:00.0 Cezanne 
-## Memory: 3203MiB / 15342MiB</code></pre>
+## Memory: 4648MiB / 15342MiB</code></pre>
 </div>
 <div id="configurações-do-rstudio" class="section level3">
 <h3>Configurações do RStudio</h3>
@@ -680,25 +681,19 @@ glimpse(base_vesicula_normal)</code></pre>
 <pre class="r"><code>#TABELA COM AS IMAGENS DA VESICULA
 base_vesicula_normal %&gt;% mutate(posicao_interesse = ifelse(c(InstanceNumber &gt;= `Corte INICIAL vesícula` &amp; InstanceNumber &lt;= `Corte FINAL vesícula`), 1, 0)) -&gt; base_frames_vesicula_normal
 base_frames_vesicula_normal %&gt;% filter(posicao_interesse == 1) -&gt; base_frames_vesicula_normal
-base_frames_vesicula_normal</code></pre>
-<pre><code>## # A tibble: 4,110 × 10
-##    FileName      Patie…¹ Serie…² Insta…³ Corte…⁴ Corte…⁵ Hipod…⁶ Densi…⁷ FileP…⁸
-##    &lt;chr&gt;           &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt; &lt;chr&gt;  
-##  1 0000483240_4…  483240       4      40      40      56 V             1 /home/…
-##  2 0000483240_4…  483240       4      41      40      56 V             1 /home/…
-##  3 0000483240_4…  483240       4      42      40      56 V             1 /home/…
-##  4 0000483240_4…  483240       4      43      40      56 V             1 /home/…
-##  5 0000483240_4…  483240       4      44      40      56 V             1 /home/…
-##  6 0000483240_4…  483240       4      45      40      56 V             1 /home/…
-##  7 0000483240_4…  483240       4      46      40      56 V             1 /home/…
-##  8 0000483240_4…  483240       4      47      40      56 V             1 /home/…
-##  9 0000483240_4…  483240       4      48      40      56 V             1 /home/…
-## 10 0000483240_4…  483240       4      49      40      56 V             1 /home/…
-## # … with 4,100 more rows, 1 more variable: posicao_interesse &lt;dbl&gt;, and
-## #   abbreviated variable names ¹​PatientID, ²​SerieNumber, ³​InstanceNumber,
-## #   ⁴​`Corte INICIAL vesícula`, ⁵​`Corte FINAL vesícula`,
-## #   ⁶​`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`,
-## #   ⁷​`Densidade não habitual (sim=1, não=0)`, ⁸​FilePath</code></pre>
+glimpse(base_frames_vesicula_normal)</code></pre>
+<pre><code>## Rows: 4,110
+## Columns: 10
+## $ FileName                                                &lt;chr&gt; &quot;0000483240_4_…
+## $ PatientID                                               &lt;dbl&gt; 483240, 483240…
+## $ SerieNumber                                             &lt;dbl&gt; 4, 4, 4, 4, 4,…
+## $ InstanceNumber                                          &lt;dbl&gt; 40, 41, 42, 43…
+## $ `Corte INICIAL vesícula`                                &lt;dbl&gt; 40, 40, 40, 40…
+## $ `Corte FINAL vesícula`                                  &lt;dbl&gt; 56, 56, 56, 56…
+## $ `Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` &lt;fct&gt; V, V, V, V, V,…
+## $ `Densidade não habitual (sim=1, não=0)`                 &lt;dbl&gt; 1, 1, 1, 1, 1,…
+## $ FilePath                                                &lt;chr&gt; &quot;/home/luiz/De…
+## $ posicao_interesse                                       &lt;dbl&gt; 1, 1, 1, 1, 1,…</code></pre>
 </div>
 </div>
 

@@ -180,7 +180,7 @@ glimpse(base_vesicula_normal)
 #TABELA COM AS IMAGENS DA VESICULA
 base_vesicula_normal %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) -> base_frames_vesicula_normal
 base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_vesicula_normal
-base_frames_vesicula_normal
+glimpse(base_frames_vesicula_normal)
 
 ```
 
