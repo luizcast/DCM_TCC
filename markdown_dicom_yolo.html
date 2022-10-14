@@ -11,7 +11,6 @@
 
 <meta name="author" content="Luiz Castiglioni" />
 
-<meta name="date" content="2022-10-10" />
 
 <title>Dicom Detect with YOLOv7</title>
 
@@ -358,7 +357,7 @@ display: none;
 
 <h1 class="title toc-ignore">Dicom Detect with YOLOv7</h1>
 <h4 class="author">Luiz Castiglioni</h4>
-<h4 class="date">10/10/2022</h4>
+<h4 class="date">13/10/2022</h4>
 
 </div>
 
@@ -391,16 +390,22 @@ Format</p>
 <div id="arquivos-do-projeto" class="section level3">
 <h3>Arquivos do projeto</h3>
 <pre class="r"><code>list.files(include.dirs = TRUE)</code></pre>
-<pre><code>##  [1] &quot;1PRIMEIRO_SCRIPT.R&quot;        &quot;2SEGUNDO_SCRIPT.R&quot;        
-##  [3] &quot;3TERCEIRO_SCRIPT.R&quot;        &quot;4QUARTO_SCRIPT.R&quot;         
-##  [5] &quot;5QUINTO_SCRIPT.R&quot;          &quot;Anot_IMGS.R&quot;              
-##  [7] &quot;dcm_tools.Rproj&quot;           &quot;IMGs&quot;                     
-##  [9] &quot;keras.R&quot;                   &quot;markdown_dicom_yolo_files&quot;
-## [11] &quot;markdown_dicom_yolo.docx&quot;  &quot;markdown_dicom_yolo.html&quot; 
-## [13] &quot;markdown_dicom_yolo.pdf&quot;   &quot;markdown_dicom_yolo.Rmd&quot;  
-## [15] &quot;rascunho.R&quot;                &quot;README.md&quot;                
-## [17] &quot;slides.odp&quot;                &quot;TABLEs&quot;                   
-## [19] &quot;yolo_dicom_v1.pt&quot;</code></pre>
+<pre><code>##  [1] &quot;1PRIMEIRO_SCRIPT.R&quot;             &quot;2SEGUNDO_SCRIPT.R&quot;             
+##  [3] &quot;3TERCEIRO_SCRIPT.R&quot;             &quot;4QUARTO_SCRIPT.R&quot;              
+##  [5] &quot;5QUINTO_SCRIPT.R&quot;               &quot;Anot_IMGS.R&quot;                   
+##  [7] &quot;base_imgs_amostra.png&quot;          &quot;bounding_boxes.png&quot;            
+##  [9] &quot;capitulo_amostra.png&quot;           &quot;capitulo_amostra2.png&quot;         
+## [11] &quot;dcm_tools.Rproj&quot;                &quot;exemplo_annot_bounding_box.png&quot;
+## [13] &quot;IMGs&quot;                           &quot;keras.R&quot;                       
+## [15] &quot;markdown_dicom_yolo_files&quot;      &quot;markdown_dicom_yolo.docx&quot;      
+## [17] &quot;markdown_dicom_yolo.html&quot;       &quot;markdown_dicom_yolo.pdf&quot;       
+## [19] &quot;markdown_dicom_yolo.Rmd&quot;        &quot;rascunho.R&quot;                    
+## [21] &quot;README.md&quot;                      &quot;slides.odp&quot;                    
+## [23] &quot;TABLEs&quot;                         &quot;txt_bounding_box.png&quot;          
+## [25] &quot;X0000604664_10_1.png&quot;           &quot;X0000604664_10_10.png&quot;         
+## [27] &quot;X0000604664_10_100.png&quot;         &quot;X0000604664_10_101.png&quot;        
+## [29] &quot;X0000604664_10_102.png&quot;         &quot;X0000604664_10_103.png&quot;        
+## [31] &quot;yolo_dicom_v1.pt&quot;</code></pre>
 </div>
 <div id="configurações-da-máquina" class="section level3">
 <h3>Configurações da Máquina</h3>
@@ -415,7 +420,7 @@ Format</p>
 ## CPU: AMD Ryzen 7 5800H with Radeon Graphics (16) @ 4.463GHz 
 ## GPU: NVIDIA GeForce RTX 3060 Mobile / Max-Q 
 ## GPU: AMD ATI 06:00.0 Cezanne 
-## Memory: 4648MiB / 15342MiB</code></pre>
+## Memory: 4699MiB / 15342MiB</code></pre>
 </div>
 <div id="configurações-do-rstudio" class="section level3">
 <h3>Configurações do RStudio</h3>
@@ -560,8 +565,8 @@ index_dicom$InstanceNumber %&gt;% str_sub(end=-5) -&gt; index_dicom$InstanceNumb
 bind_cols(array_arquivos_dicom_tratados,index_dicom) -&gt; index_dicom
 names(index_dicom) &lt;- c(&quot;FileName&quot;,&quot;PatientID&quot;,&quot;SerieNumber&quot;,&quot;InstanceNumber&quot;)
           index_dicom$PatientID &lt;- as.numeric(index_dicom$PatientID)
-          index_dicom$SerieNumber = as.numeric(index_dicom$SerieNumber)
-          index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber)
+          index_dicom$SerieNumber &lt;- as.numeric(index_dicom$SerieNumber)
+          index_dicom$InstanceNumber &lt;- as.numeric(index_dicom$InstanceNumber)
           glimpse(index_dicom)</code></pre>
 <pre><code>## Rows: 153,435
 ## Columns: 4

@@ -3,11 +3,11 @@ title: "Dicom Detect with YOLOv7"
 author: "Luiz Castiglioni"
 date: "`r format(Sys.time(), '%d/%m/%Y')`"
 output:
-  pdf_document: default
+  html_document: null
   toc: yes
   toc_depth: 2
   num_sections: yes
-  html_document: null
+  pdf_document: default
   word_document: default
 ---
 
