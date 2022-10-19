@@ -24,7 +24,7 @@ Destas anotações surgiu a tabela annot_clean:
 
 ![annot_clean](https://user-images.githubusercontent.com/87153755/192905097-98bce90d-f05f-41a9-bc1a-665562182f4c.png)
 
-## Tabela de Frequencia da Variável Categórica Nominal 'Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`
+## Tabela de Frequencia da Variável annot_clean$'Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`
 
 ![tabela_frequencia](https://user-images.githubusercontent.com/87153755/192905780-bb9d48d3-5f41-4d0c-af1a-0d0375bfffaf.png)
 
