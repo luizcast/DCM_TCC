@@ -313,9 +313,17 @@ Resultados_amostra_teste_paraTCC <- read_excel("Resultados_amostra_teste_paraTCC
 Resultados_amostra_teste_paraTCC$Acuracia = as.numeric(Resultados_amostra_teste_paraTCC$Acuracia)
 summary(Resultados_amostra_teste_paraTCC$Acuracia) 
 
-library(fs)
+library(fs) 
 (dir_ls(path = "~/yolov7/EXEMPLO_AMOSTRA/train/", recurse = TRUE))
 nrow(base_arquivos_amostra)
 
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") %>% nrow()
-print(filter(base_tratada$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H"), "fotos")
+
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V"))), "Imagens Vesícula")
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C","S"))), "Imagens sem Vesícula")
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("V"))), "Imagens Vesícula Normal")
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H"))), "Imagens Vesícula Hipodistendida")
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C"))), "Imagens Clipe Cirúrgico")
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S"))), "Imagens sem Vesícula")
+
+      

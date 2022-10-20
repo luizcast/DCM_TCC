@@ -427,7 +427,7 @@ Format</p>
 ## CPU: AMD Ryzen 7 5800H with Radeon Graphics (16) @ 4.463GHz 
 ## GPU: NVIDIA GeForce RTX 3060 Mobile / Max-Q 
 ## GPU: AMD ATI 06:00.0 Cezanne 
-## Memory: 2657MiB / 15342MiB</code></pre>
+## Memory: 3324MiB / 15342MiB</code></pre>
 </div>
 <div id="configurações-do-rstudio" class="section level3">
 <h3>Configurações do RStudio</h3>
@@ -634,20 +634,10 @@ base_tratada %&gt;% group_by(PatientID) %&gt;% count(SerieNumber) %&gt;% ungroup
 ##  9    604664           8   461
 ## 10    604664           9   155
 ## # … with 510 more rows</code></pre>
-<pre class="r"><code>#TABELA SEM VESICULA COM CLIPE
-base_clipe &lt;- base_tratada %&gt;% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == &quot;C&quot;)
-glimpse(base_clipe)</code></pre>
-<pre><code>## Rows: 55,309
-## Columns: 9
-## $ FileName                                                &lt;chr&gt; &quot;0000548545_2_…
-## $ PatientID                                               &lt;dbl&gt; 548545, 548545…
-## $ SerieNumber                                             &lt;dbl&gt; 2, 2, 2, 2, 2,…
-## $ InstanceNumber                                          &lt;dbl&gt; 1, 10, 100, 10…
-## $ `Corte INICIAL vesícula`                                &lt;dbl&gt; NA, NA, NA, NA…
-## $ `Corte FINAL vesícula`                                  &lt;dbl&gt; NA, NA, NA, NA…
-## $ `Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` &lt;fct&gt; C, C, C, C, C,…
-## $ `Densidade não habitual (sim=1, não=0)`                 &lt;dbl&gt; NA, NA, NA, NA…
-## $ FilePath                                                &lt;chr&gt; &quot;/home/luiz/De…</code></pre>
+<pre class="r"><code>paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c(&quot;H&quot;,&quot;V&quot;))), &quot;Imagens Vesícula&quot;)</code></pre>
+<pre><code>## [1] &quot;79597 Imagens Vesícula&quot;</code></pre>
+<pre class="r"><code>paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c(&quot;C&quot;,&quot;S&quot;))), &quot;Imagens sem Vesícula&quot;)</code></pre>
+<pre><code>## [1] &quot;82730 Imagens sem Vesícula&quot;</code></pre>
 <pre class="r"><code>#TABELA SEM VESICULA SEM CLIPE
 base_sem_clipe &lt;- base_tratada %&gt;% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == &quot;S&quot;)
 glimpse(base_sem_clipe)</code></pre>

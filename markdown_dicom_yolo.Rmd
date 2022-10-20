@@ -161,9 +161,10 @@ table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 #N DE IMAGENS POR SERIENUMBER
 base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)
 
-#TABELA SEM VESICULA COM CLIPE
-base_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "C")
-glimpse(base_clipe)
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V"))), "Imagens Vesícula")
+
+paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C","S"))), "Imagens sem Vesícula")
+
 
 #TABELA SEM VESICULA SEM CLIPE
 base_sem_clipe <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "S")
