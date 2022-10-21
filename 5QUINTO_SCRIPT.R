@@ -225,15 +225,7 @@ base_vesicula_normal %>% filter(PatientID == 3870806 & SerieNumber == 2) %>% fil
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> prova_imgs_out
 
 
-base_tratada %>% 
-  filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") %>% 
-  mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
-                                        InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) %>% 
-  filter(posicao_interesse == 1)  %>% 
-  mutate(MEDIA = c(`Corte INICIAL vesícula`+`Corte FINAL vesícula`)/2) %>% 
-  filter(InstanceNumber == MEDIA) %>% 
-  select(-posicao_interesse, -MEDIA) %>% 
-  .[!duplicated(.$PatientID),] -> imgs_hipo
+
 
 
 imgs_hipo %>% group_by(FilePath) %>% 
