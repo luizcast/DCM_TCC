@@ -1,6 +1,6 @@
 #### INICIO ####
-#Existe um facínio em ver a máquina acertar. Quanto mais ela acerta, mais dúvidas aparecem sobre nosso julgamento da realidade. 
-#E a partir daquele acerto, tudo muda. Sem volta.
+#Existe um facínio em ver a máquina acertar. Quanto mais ela acerta, mais dúvidas aparecem sobre o a realidade que nos cerca. 
+
 
 ### DATASET INFO #####
 #TOTAL FILES: 165371
@@ -65,10 +65,10 @@ gsub(pattern = "Não se aplica", replacement = "0", annot_clean$`Densidade não 
 gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte INICIAL vesícula`) -> annot_clean$`Corte INICIAL vesícula`
 gsub(pattern = "Não se aplica", replacement = "NA", annot_clean$`Corte FINAL vesícula`) -> annot_clean$`Corte FINAL vesícula`
 
-annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` <- as.factor(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
-annot_clean$`Corte FINAL vesícula` <- as.numeric(annot_clean$`Corte FINAL vesícula`)
-annot_clean$`Corte INICIAL vesícula` <- as.numeric(annot_clean$`Corte INICIAL vesícula`)
-annot_clean$`Densidade não habitual (sim=1, não=0)` <- as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
+annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` = as.factor(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
+annot_clean$`Corte FINAL vesícula` = as.numeric(annot_clean$`Corte FINAL vesícula`)
+annot_clean$`Corte INICIAL vesícula` = as.numeric(annot_clean$`Corte INICIAL vesícula`)
+annot_clean$`Densidade não habitual (sim=1, não=0)` = as.numeric(annot_clean$`Densidade não habitual (sim=1, não=0)`)
 glimpse(annot_clean)
 table(annot_clean$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)
 annot_clean
@@ -225,13 +225,16 @@ base_vesicula_normal %>% filter(PatientID == 3870806 & SerieNumber == 2) %>% fil
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> prova_imgs_out
 
 
-
-base_vesicula_hipodistendida %>% 
-  mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 2)) %>% 
-  filter(posicao_interesse == 1) -> base_frames_vesicula_hipodistendida
-base_frames_vesicula_hipodistendida %>% group_by(PatientID) %>%  
+base_tratada %>% 
+  filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") %>% 
+  mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
+                                        InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) %>% 
+  filter(posicao_interesse == 1)  %>% 
   mutate(MEDIA = c(`Corte INICIAL vesícula`+`Corte FINAL vesícula`)/2) %>% 
-  filter(InstanceNumber == MEDIA) %>% ungroup() -> imgs_hipo
+  filter(InstanceNumber == MEDIA) %>% 
+  select(-posicao_interesse, -MEDIA) %>% 
+  .[!duplicated(.$PatientID),] -> imgs_hipo
+
 
 imgs_hipo %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> imgs_out_hipo
