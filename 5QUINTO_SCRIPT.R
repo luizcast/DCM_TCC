@@ -1,5 +1,5 @@
 #### INICIO ####
-#Existe um facínio em ver a máquina acertar. Quanto mais ela acerta, mais dúvidas aparecem sobre nosso julgamento sobre a realidade. 
+#Existe um facínio em ver a máquina acertar. Quanto mais ela acerta, mais dúvidas aparecem sobre nosso julgamento da realidade. 
 #E a partir daquele acerto, tudo muda. Sem volta.
 
 ### DATASET INFO #####
@@ -204,8 +204,13 @@ list.files("~/Desktop/IMAGENS_KERAS/VESICULA/") %>%  as_tibble() -> vesic
 separate(vesic, col = value, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) -> vesic
 vesic$InstanceNumber %>% str_sub(end=-5) -> vesic$InstanceNumber
 
+base_tratada %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> base_tratada_final
 
-vesic 
+
+
+temp_dcm_export(base_tratada$FilePath, '--write-jpeg', make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))
+  
 
 amostra_vesicula %>% mutate(id = str_sub(FilePath, start = 35L, end = -5L)) %>% 
   separate(col = id, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) %>% right_join(vesic) -> tabela_imgs_vesicula
