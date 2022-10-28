@@ -58,7 +58,7 @@ path = "/home/luiz/Desktop/DATA-SET_TESTE/"
 
 #### Preparando Dataset annot_clean ####
 #Esta base foi anotada pelos médicos da UNIFESP.
-read_excel("~/Desktop/USP/TCC/projeto_TCC/TABLEs/annot_clean.xlsx") %>% as_tibble() -> annot_clean
+read_excel("~/Desktop/USP/TCC/projeto_TCC/annot_clean.xlsx") %>% as_tibble() -> annot_clean
 tail(annot_clean, 20)
 glimpse(annot_clean)
 gsub(pattern = "Não se aplica", replacement = "0", annot_clean$`Densidade não habitual (sim=1, não=0)`) -> annot_clean$`Densidade não habitual (sim=1, não=0)`
@@ -82,7 +82,7 @@ bind_cols(array_arquivos_dicom_tratados,index_dicom) -> index_dicom
   index_dicom
 names(index_dicom) <- c("FileName","PatientID","SerieNumber","InstanceNumber")
 
-          index_dicom$PatientID <- as.numeric(index_dicom$PatientID)
+          index_dicom$PatientID = as.numeric(index_dicom$PatientID)
           index_dicom$SerieNumber = as.numeric(index_dicom$SerieNumber)
           index_dicom$InstanceNumber = as.numeric(index_dicom$InstanceNumber) 
 
@@ -105,6 +105,8 @@ annot_clean %>% ggplot(aes(x = `Hipodistendida/Vesícula normal/Clipe/sem clipe 
 #plot FREQUENCIA
 base_tratada %>% ggplot(aes(x = `Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)) + geom_bar(aes(fill = `Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`)) + ylim(0, 80000) + geom_text(stat = 'count', aes(label = ..count..), vjust=-0.5) + ggtitle("base_tratada") + ylab("contagem") + theme(legend.position = "none")
 
+base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`%in% c("C","S")) %>% nrow()
+
 #n de Imagens por SerieNumber
 base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientID)
 
@@ -116,7 +118,7 @@ base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`
 
 #TABELA COM VESICULA HIPOESTENDIDA
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") %>% nrow()
-glimpse(base_vesicula_hipodistendida)
+
 #TABELA COM VESICULA NORMAL
 base_vesicula_normal <- base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "V")
 base_vesicula_normal
@@ -131,7 +133,8 @@ glimpse(base_frames_vesicula_normal)
 base_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() -> tabela_n_por_serie
 base_vesicula_normal %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup() %>% count(PatientID) 
 
-#RETIRANDO DA TABELA A "IMAGENS NO MEIO" DE CASA SERIE
+#### AMOSTRA VESICULA NORMAL ####
+
 base_frames_vesicula_normal %>% unite("ID_SERIE", PatientID:SerieNumber) -> ID_SERIE
 base_frames_vesicula_normal[!duplicated(ID_SERIE$ID_SERIE),] -> ID_UNICO
 ID_UNICO$MEDIA <- c(ID_UNICO$`Corte INICIAL vesícula` + ID_UNICO$`Corte FINAL vesícula`) / 2
@@ -146,7 +149,7 @@ geradorPatienIDSerieNumberMEDIA %>% left_join(base_frames_vesicula_normal, by=c(
 str_length(geradorPatienIDSerieNumberMEDIA$FINAL)
 geradorPatienIDSerieNumberMEDIA
 
-##### AMOSTRA HIPODISTENDIDA #####
+##### AMOSTRA VESICULA HIPODISTENDIDA #####
 
 base_tratada %>% 
   filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") %>% 
@@ -159,8 +162,8 @@ base_tratada %>%
   .[!duplicated(.$PatientID),] -> imgs_hipo
 
 
+#### CRIANDO MODELO GLM #####
 
-#### CRIANDO MODELO #####
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c('H','V')) %>% 
   filter(str_length(FileName) <= 21)-> tabela_GLM
 tabela_GLM %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & 
@@ -177,7 +180,7 @@ tabela_GLM$fit <- modelo_fit$fitted.values
 
 tabela_GLM %>% filter(tabela_GLM$posicao_interesse == 1) %>% summary()
 
-#aplicando a tabela CLIPE
+#### AMOSTRA CLIPE (aplicando o modelo GLM) ####
 
 summary(modelo_fit)
 tabela_GLM$fit %>% summary()
@@ -217,10 +220,9 @@ list.files("~/Desktop/IMAGENS_KERAS/VESICULA/") %>%  as_tibble() -> vesic
 separate(vesic, col = value, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) -> vesic
 vesic$InstanceNumber %>% str_sub(end=-5) -> vesic$InstanceNumber
 
-base_tratada %>% group_by(FilePath) %>% 
-  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> base_tratada_final
 
-
+imgs_vesicula_norm %>% group_by(FilePath) %>% 
+  mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup()
 
 temp_dcm_export(base_tratada$FilePath, '--write-jpeg', make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))
   
@@ -228,7 +230,7 @@ temp_dcm_export(base_tratada$FilePath, '--write-jpeg', make.names(paste(str_sub(
 amostra_vesicula %>% mutate(id = str_sub(FilePath, start = 35L, end = -5L)) %>% 
   separate(col = id, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) %>% right_join(vesic) -> tabela_imgs_vesicula
 tabela_imgs_vesicula
-x
+
 
 imgs %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 42L, end = -5L), "png", sep = "."),unique = TRUE))) -> imgs_com_path
@@ -278,7 +280,7 @@ summary(base_tratada)
 
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% NA) -> base_NAs
 base_NAs$PatientID = as.factor(base_NAs$PatientID)
-base_NAs %>% summary()
+base_NAs$PatientID %>% summary()
 
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% NA) %>% head() %>% group_by(FilePath) %>% 
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup() -> NASSSS
@@ -291,8 +293,10 @@ path3 = "/home/luiz/amostra/"
 list.files(path = path3) %>% as_tibble() -> array_imgs_amostra
 list.files(path = path3) %>% as_tibble() %>% 
   separate(col = value, sep = "_", into = c("PatientID","SerieNumber","InstanceNumber")) -> imgs_amostra
+
 imgs_amostra$InstanceNumber %>% str_sub(end=-5) -> imgs_amostra$InstanceNumber
 imgs_amostra$PatientID %>% str_sub(start=2) -> imgs_amostra$PatientID
+
 imgs_amostra$PatientID = as.numeric(imgs_amostra$PatientID)
 imgs_amostra$SerieNumber = as.numeric(imgs_amostra$SerieNumber)
 imgs_amostra$InstanceNumber = as.numeric(imgs_amostra$InstanceNumber)
@@ -330,14 +334,19 @@ library(fs)
 (dir_ls(path = "~/yolov7/EXEMPLO_AMOSTRA/train/", recurse = TRUE))
 nrow(base_arquivos_amostra)
 
-base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` == "H") %>% nrow()
-
-cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V"))), "imagens de", print(base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V")) %>% count(PatientID) %>% nrow()), "pacientes que TEM vesícula")
-paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C","S"))), "imagens de", print(group_by(dplyr::filter(base_tratada$`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C","S")))) , "pacientes que NÃO TEM vesícula")
-
-paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("V"))), "Imagens Vesícula Normal")
-paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H"))), "Imagens Vesícula Hipodistendida")
-paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C"))), "Imagens Clipe Cirúrgico")
-paste(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S"))), "Imagens sem Vesícula")
-
-base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V")) %>% count(PatientID) %>% nrow()
+cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V"))), "imagens de", paste(base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V")) %>% count(PatientID) %>% nrow()), "pacientes que TEM vesícula")
+cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S","C"))), "imagens de", paste(base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S","C")) %>% count(PatientID) %>% nrow()), "pacientes que NÃO TEM vesícula")
+cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("V"))), "Imagens Vesícula Normal")
+cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H"))), "Imagens Vesícula Hipodistendida")
+cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C"))), "Imagens Clipe Cirúrgico")
+cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S"))), "Imagens sem Vesícula/Clipe")
+cat("Total de",nrow(base_tratada),"Imagens DICOM")
+c("Imagens Vesícula Normal", "Imagens Vesícula Hipodistendida", "Imagens Clipe Cirúrgico", "Imagens sem Vesícula/Clipe", "Total") %>% as_tibble() -> x
+x$Imagens = as.numeric()
+x$Imagens[1] <- nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("V")))
+x$Imagens[2] <- nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H")))
+x$Imagens[3] <- nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("C")))
+x$Imagens[4] <- nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S")))
+x$Imagens[5] <- nrow(base_tratada)
+names(x) <- c("CATEGORIA DICOM", "Imagens") 
+x
