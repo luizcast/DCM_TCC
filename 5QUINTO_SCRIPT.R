@@ -11,7 +11,7 @@
 # https://www.dicomstandard.org/ai
 
 ###PACKAGES####
-
+   
 #oro.dicom() - https://cran.r-project.org/web/packages/oro.dicom/index.html
 #dcmtk() - https://dicom.offis.de/dcmtk.php.en
 #divest() - 
