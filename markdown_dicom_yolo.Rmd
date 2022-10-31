@@ -172,7 +172,11 @@ base_tratada %>% group_by(PatientID) %>% count(SerieNumber) %>% ungroup(PatientI
 
 ```
 
+<<<<<<< HEAD
 ```{r echo=TRUE}
+=======
+```{r echo=FALSE}
+>>>>>>> cda627d3ce7d4a7920a971f59a26c7a783a8240e
 cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V"))), "imagens de", paste(base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("H","V")) %>% count(PatientID) %>% nrow()), "pacientes que TEM vesícula")
 cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S","C"))), "imagens de", paste(base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("S","C")) %>% count(PatientID) %>% nrow()), "pacientes que NÃO TEM vesícula")
 cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c("V"))), "Imagens Vesícula Normal")
@@ -184,7 +188,13 @@ cat("Total de",nrow(base_tratada),"Imagens DICOM")
 
 ```{r}
 #TABELA COM AS IMAGENS DA VESICULA
+<<<<<<< HEAD
 base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`== "V") %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) %>% filter(posicao_interesse == 1) %>% select(-posicao_interesse) -> base_frames_vesicula_normal
 nrow(base_frames_vesicula_normal)
+=======
+base_tratada %>% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`== "V") %>% mutate(posicao_interesse = ifelse(c(InstanceNumber >= `Corte INICIAL vesícula` & InstanceNumber <= `Corte FINAL vesícula`), 1, 0)) -> base_frames_vesicula_normal
+base_frames_vesicula_normal %>% filter(posicao_interesse == 1) -> base_frames_vesicula_normal
+glimpse(base_frames_vesicula_normal)
+>>>>>>> cda627d3ce7d4a7920a971f59a26c7a783a8240e
 ```
 

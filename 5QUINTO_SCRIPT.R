@@ -232,6 +232,10 @@ temp_dcm_export(base_tratada$FilePath, '--write-jpeg', make.names(paste(str_sub(
 amostra_vesicula %>% mutate(id = str_sub(FilePath, start = 35L, end = -5L)) %>% 
   separate(col = id, sep = "_", into = c("FileName","SerieNumber","InstanceNumber")) %>% right_join(vesic) -> tabela_imgs_vesicula
 tabela_imgs_vesicula
+<<<<<<< HEAD
+=======
+
+>>>>>>> cda627d3ce7d4a7920a971f59a26c7a783a8240e
 
 
 
@@ -339,6 +343,7 @@ x$Imagens[4] <- nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/
 x$Imagens[5] <- nrow(base_tratada)
 names(x) <- c("CATEGORIA DICOM", "Imagens") 
 x
+<<<<<<< HEAD
 
 
 
@@ -354,3 +359,5 @@ base_NAs %>% filter(SerieNumber==2) %>% group_by(FilePath) %>%
   mutate(imagePath = temp_dcm_export(FilePath, "--write-jpeg", make.names(paste(str_sub(FilePath, start = 35L, end = -5L), "png", sep = "."),unique = TRUE))) %>% ungroup()
 
 
+=======
+>>>>>>> cda627d3ce7d4a7920a971f59a26c7a783a8240e

@@ -420,7 +420,11 @@ Format</p>
 ## CPU: AMD Ryzen 7 5800H with Radeon Graphics (16) @ 4.463GHz 
 ## GPU: NVIDIA GeForce RTX 3060 Mobile / Max-Q 
 ## GPU: AMD ATI 06:00.0 Cezanne 
+<<<<<<< HEAD
 ## Memory: 3520MiB / 15342MiB</code></pre>
+=======
+## Memory: 4593MiB / 15342MiB</code></pre>
+>>>>>>> cda627d3ce7d4a7920a971f59a26c7a783a8240e
 </div>
 <div id="configurações-do-rstudio" class="section level3">
 <h3>Configurações do RStudio</h3>
@@ -632,6 +636,7 @@ base_tratada %&gt;% group_by(PatientID) %&gt;% count(SerieNumber) %&gt;% ungroup
 ##  9    604664           8   461
 ## 10    604664           9   155
 ## # … with 510 more rows</code></pre>
+<<<<<<< HEAD
 <pre class="r"><code>cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c(&quot;H&quot;,&quot;V&quot;))), &quot;imagens de&quot;, paste(base_tratada %&gt;% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c(&quot;H&quot;,&quot;V&quot;)) %&gt;% count(PatientID) %&gt;% nrow()), &quot;pacientes que TEM vesícula&quot;)</code></pre>
 <pre><code>## 79597 imagens de 98 pacientes que TEM vesícula</code></pre>
 <pre class="r"><code>cat(nrow(filter(base_tratada,`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c(&quot;S&quot;,&quot;C&quot;))), &quot;imagens de&quot;, paste(base_tratada %&gt;% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` %in% c(&quot;S&quot;,&quot;C&quot;)) %&gt;% count(PatientID) %&gt;% nrow()), &quot;pacientes que NÃO TEM vesícula&quot;)</code></pre>
@@ -650,6 +655,31 @@ base_tratada %&gt;% group_by(PatientID) %&gt;% count(SerieNumber) %&gt;% ungroup
 base_tratada %&gt;% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`== &quot;V&quot;) %&gt;% mutate(posicao_interesse = ifelse(c(InstanceNumber &gt;= `Corte INICIAL vesícula` &amp; InstanceNumber &lt;= `Corte FINAL vesícula`), 1, 0)) %&gt;% filter(posicao_interesse == 1) %&gt;% select(-posicao_interesse) -&gt; base_frames_vesicula_normal
 nrow(base_frames_vesicula_normal)</code></pre>
 <pre><code>## [1] 4110</code></pre>
+=======
+<pre><code>## 79597 imagens de 98 pacientes que TEM vesícula</code></pre>
+<pre><code>## 82730 imagens de 89 pacientes que NÃO TEM vesícula</code></pre>
+<pre><code>## 71244 Imagens Vesícula Normal</code></pre>
+<pre><code>## 8353 Imagens Vesícula Hipodistendida</code></pre>
+<pre><code>## 55309 Imagens Clipe Cirúrgico</code></pre>
+<pre><code>## 27421 Imagens sem Vesícula/Clipe</code></pre>
+<pre><code>## Total de 165794 Imagens DICOM</code></pre>
+<pre class="r"><code>#TABELA COM AS IMAGENS DA VESICULA
+base_tratada %&gt;% filter(`Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)`== &quot;V&quot;) %&gt;% mutate(posicao_interesse = ifelse(c(InstanceNumber &gt;= `Corte INICIAL vesícula` &amp; InstanceNumber &lt;= `Corte FINAL vesícula`), 1, 0)) -&gt; base_frames_vesicula_normal
+base_frames_vesicula_normal %&gt;% filter(posicao_interesse == 1) -&gt; base_frames_vesicula_normal
+glimpse(base_frames_vesicula_normal)</code></pre>
+<pre><code>## Rows: 4,110
+## Columns: 10
+## $ FileName                                                &lt;chr&gt; &quot;0000483240_4_…
+## $ PatientID                                               &lt;dbl&gt; 483240, 483240…
+## $ SerieNumber                                             &lt;dbl&gt; 4, 4, 4, 4, 4,…
+## $ InstanceNumber                                          &lt;dbl&gt; 40, 41, 42, 43…
+## $ `Corte INICIAL vesícula`                                &lt;dbl&gt; 40, 40, 40, 40…
+## $ `Corte FINAL vesícula`                                  &lt;dbl&gt; 56, 56, 56, 56…
+## $ `Hipodistendida/Vesícula normal/Clipe/sem clipe (HVSC)` &lt;fct&gt; V, V, V, V, V,…
+## $ `Densidade não habitual (sim=1, não=0)`                 &lt;dbl&gt; 1, 1, 1, 1, 1,…
+## $ FilePath                                                &lt;chr&gt; &quot;/home/luiz/De…
+## $ posicao_interesse                                       &lt;dbl&gt; 1, 1, 1, 1, 1,…</code></pre>
+>>>>>>> cda627d3ce7d4a7920a971f59a26c7a783a8240e
 </div>
 </div>
 
